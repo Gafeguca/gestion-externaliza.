@@ -2,37 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Externalizar - Acceso</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background-color: #1a4fdb; display: flex; justify-content: center; align-items: center; }
         .login-card { background-color: white; padding: 50px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 90%; max-width: 1000px; display: flex; gap: 50px; align-items: center; }
         .form-section { flex: 1.2; }
-        .form-section h1 { color: #0d3b0d; font-size: 32px; font-weight: 800; }
+        .form-section h1 { color: #0d3b0d; font-size: 32px; font-weight: 800; margin-bottom: 10px; }
         .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; }
-        .input-group input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9; }
-        .login-button { background-color: #67b9e8; color: white; border: none; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; }
+        .input-group input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9; box-sizing: border-box; font-size: 16px; }
+        .login-button { background-color: #67b9e8; color: white; border: none; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
+        .login-button:hover { background-color: #55a8d6; }
+        .login-button:disabled { background-color: #ccc; }
         #mensajeError { color: #f87171; display: none; margin-top: 15px; font-weight: 600; text-align: center; }
-        .image-section { flex: 1; text-align: center; }
-        .image-section img { max-width: 100%; }
+        .image-section { flex: 1; display: flex; justify-content: center; }
+        .image-section img { max-width: 100%; height: auto; }
     </style>
 </head>
 <body>
     <div class="login-card">
         <div class="form-section">
             <h1>Bienvenid@ a Externalizar</h1>
-            <p>Por favor ingrese su usuario y su contraseña</p>
+            <p>Ingrese sus credenciales para continuar</p>
             <form id="loginForm">
                 <div class="input-group">
-                    <label>USUARIO / RUT</label>
-                    <input type="text" id="userInput" placeholder="Ej: 10200414-0" required>
+                    <label>RUT</label>
+                    <input type="text" id="rutInput" placeholder="Ej: 10200414-0" required>
                 </div>
                 <div class="input-group">
                     <label>CONTRASEÑA</label>
                     <input type="password" id="passInput" placeholder="**********" required>
                 </div>
-                <button type="submit" class="login-button">Ingresar</button>
-                <div id="mensajeError">⚠️ Datos incorrectos o usuario no autorizado</div>
+                <button type="submit" class="login-button" id="btnIngresar">Ingresar</button>
+                <div id="mensajeError">⚠️ RUT o Contraseña incorrectos</div>
             </form>
         </div>
         <div class="image-section">
@@ -41,37 +44,46 @@
     </div>
 
     <script>
-        localStorage.clear(); // Limpiar siempre al iniciar
+        localStorage.clear();
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const userIn = document.getElementById('userInput').value.trim().toLowerCase();
+            const btn = document.getElementById('btnIngresar');
+            const rutIn = document.getElementById('rutInput').value.trim();
             const passIn = document.getElementById('passInput').value.trim();
             const errorDiv = document.getElementById('mensajeError');
             
+            btn.innerText = "Verificando...";
+            btn.disabled = true;
+            errorDiv.style.display = 'none';
+
+            // URL de tu API de SheetDB
             const apiURL = "https://sheetdb.io/api/v1/bcicxw6vxc36j";
 
             try {
                 const response = await fetch(apiURL);
                 const usuarios = await response.json();
 
-                // Comparación reforzada (limpia espacios y minúsculas)
+                // Buscamos al usuario comparando el RUT y la CLAVE
                 const encontrado = usuarios.find(u => {
-                    const excelUser = String(u.usuario || "").trim().toLowerCase();
-                    const excelRut = String(u.rut || "").trim().toLowerCase();
-                    const excelClave = String(u.clave || "").trim();
-                    
-                    return (excelUser === userIn || excelRut === userIn) && excelClave === passIn;
+                    const exRut = String(u.rut || "").trim();
+                    const exClave = String(u.clave || "").trim();
+                    return exRut === rutIn && exClave === passIn;
                 });
 
                 if (encontrado) {
+                    // Guardamos el nombre (columna 'usuario') para saludar en la siguiente página
                     localStorage.setItem('nombreUsuario', encontrado.usuario);
                     window.location.href = "trabajador.html";
                 } else {
                     errorDiv.style.display = 'block';
+                    btn.innerText = "Ingresar";
+                    btn.disabled = false;
                 }
             } catch (error) {
-                alert("Error de conexión. Revisa tu internet.");
+                alert("Error: No se pudo conectar con la base de datos.");
+                btn.innerText = "Ingresar";
+                btn.disabled = false;
             }
         });
     </script>
