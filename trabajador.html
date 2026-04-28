@@ -9,34 +9,64 @@
         :root { --azul-p: #1a4fdb; --oscuro: #0f172a; --fondo: #f8fafc; }
         body { display: flex; background-color: var(--fondo); min-height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
         
-        /* Sidebar */
+        /* Sidebar mejorada */
         .sidebar { width: 260px; background: var(--oscuro); color: white; padding: 30px 20px; position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 100; }
-        .sidebar h4 { color: #38bdf8; text-align: center; font-weight: 800; margin-bottom: 40px; font-size: 1.2rem; }
-        .nav-link { color: #94a3b8; padding: 12px; text-decoration: none; display: block; border-radius: 10px; margin-bottom: 5px; transition: 0.2s; }
+        .sidebar h4 { color: #38bdf8; text-align: center; font-weight: 800; margin-bottom: 40px; font-size: 1.1rem; letter-spacing: 1px; }
+        .nav-link { color: #94a3b8; padding: 12px 15px; text-decoration: none; display: block; border-radius: 10px; margin-bottom: 8px; transition: 0.3s; font-size: 0.95rem; }
         .nav-link.active { background: var(--azul-p); color: white; }
-        .nav-link:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
+        .nav-link:hover:not(.active) { background: rgba(255,255,255,0.1); color: white; transform: translateX(5px); }
         
-        /* Contenido */
-        .content { margin-left: 260px; flex-grow: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; }
-        .header-panel { width: 100%; max-width: 800px; text-align: left; margin-bottom: 40px; }
-        .options-menu { width: 100%; max-width: 800px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        /* Contenido principal */
+        .content { margin-left: 260px; flex-grow: 1; padding: 50px; display: flex; flex-direction: column; }
+        .header-panel { margin-bottom: 40px; }
+        .header-panel h2 { font-weight: 800; color: #1e293b; font-size: 2.2rem; margin-bottom: 5px; }
+        .header-panel p { color: #64748b; font-size: 1.1rem; }
+        
+        /* Cuadrícula de botones (Tus opciones originales) */
+        .options-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 25px; 
+            width: 100%; 
+            max-width: 1000px;
+        }
         
         .btn-panel { 
-            background: white; padding: 30px; border-radius: 20px; text-align: center; 
-            text-decoration: none; color: #1e293b; border: 1px solid #e2e8f0; 
-            font-weight: 600; transition: 0.3s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+            background: white; 
+            padding: 40px 20px; 
+            border-radius: 20px; 
+            text-align: center; 
+            text-decoration: none; 
+            color: #334155; 
+            border: 1px solid #e2e8f0; 
+            font-weight: 700; 
+            transition: 0.3s ease; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
-        .btn-panel:hover { border-color: var(--azul-p); color: var(--azul-p); transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         
-        .logout { margin-top: auto; color: #f87171 !important; border: 1px solid rgba(248,113,113,0.2); text-align: center; cursor: pointer; font-weight: bold; }
-        .logout:hover { background: rgba(248,113,113,0.1); }
+        .btn-panel i-icon { font-size: 2.5rem; } /* Para iconos grandes */
+        
+        .btn-panel:hover { 
+            border-color: var(--azul-p); 
+            color: var(--azul-p); 
+            transform: translateY(-8px); 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); 
+        }
 
+        /* Botón Salir */
+        .logout { margin-top: auto; color: #f87171 !important; border: 1px solid rgba(248,113,113,0.3); text-align: center; font-weight: bold; }
+        .logout:hover { background: #f87171; color: white !important; }
+
+        /* Ajuste para celulares */
         @media (max-width: 768px) {
-            .sidebar { width: 70px; padding: 20px 10px; }
+            .sidebar { width: 80px; padding: 20px 10px; }
             .sidebar h4, .nav-link span { display: none; }
-            .content { margin-left: 70px; }
-            .options-menu { grid-template-columns: 1fr; }
+            .content { margin-left: 80px; padding: 20px; }
+            .options-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -44,43 +74,57 @@
     <div class="sidebar">
         <h4>SIA EXTERNALIZAR</h4>
         <nav>
-            <a href="trabajador.html" class="nav-link active">🏠 <span>INICIO</span></a>
-            <a href="#" class="nav-link">📊 <span>DASHBOARD</span></a>
-            <a href="#" class="nav-link">📝 <span>REGISTRO</span></a>
+            <a href="trabajador.html" class="nav-link active">🏠 <span>Inicio</span></a>
+            <a href="#" class="nav-link">📊 <span>Dashboard</span></a>
+            <a href="#" class="nav-link">👥 <span>Clientes</span></a>
+            <a href="#" class="nav-link">⚖️ <span>Match Contable</span></a>
+            <a href="#" class="nav-link">📑 <span>Facturador Masivo</span></a>
         </nav>
-        <a id="btnExit" class="nav-link logout">❌ SALIR</a>
+        <a id="btnExit" class="nav-link logout">❌ Salir del Sistema</a>
     </div>
 
     <div class="content">
         <div class="header-panel">
-            <h2 id="saludoTxt" style="font-weight: 800; color: #1e293b; font-size: 2.2rem;">Cargando...</h2>
-            <p style="color: #64748b;">Panel de gestión administrativa</p>
+            <h2 id="saludoTxt">Bienvenido</h2>
+            <p>¿Qué gestión deseas realizar hoy?</p>
         </div>
 
-        <div class="options-menu">
-            <a href="#" class="btn-panel"><span>📊</span> Dashboard</a>
-            <a href="#" class="btn-panel"><span>👥</span> Clientes</a>
-            <a href="#" class="btn-panel"><span>⚖️</span> Match Contable</a>
-            <a href="#" class="btn-panel"><span>📑</span> Facturador Masivo</a>
+        <div class="options-grid">
+            <a href="#" class="btn-panel">
+                <span style="font-size: 3rem;">📊</span>
+                Dashboard
+            </a>
+            <a href="#" class="btn-panel">
+                <span style="font-size: 3rem;">👥</span>
+                Registro y actualización de Clientes
+            </a>
+            <a href="#" class="btn-panel">
+                <span style="font-size: 3rem;">⚖️</span>
+                Match Contable
+            </a>
+            <a href="#" class="btn-panel">
+                <span style="font-size: 3rem;">📑</span>
+                Facturador Masivo
+            </a>
         </div>
     </div>
 
     <script>
-        // Verificación de sesión
+        // Recuperar nombre del almacenamiento local
         const nombre = localStorage.getItem('nombreUsuario');
         
+        // Si no hay nombre (no pasó por el login), redirigir a index
         if (!nombre) {
-            // Si no hay nombre, lo manda al login (index.html)
             window.location.href = "index.html";
         } else {
             document.getElementById('saludoTxt').innerText = "Bienvenido, " + nombre;
         }
 
-        // Lógica de Salida Corregida
+        // Lógica para cerrar sesión
         document.getElementById('btnExit').addEventListener('click', function(e) {
             e.preventDefault();
-            localStorage.clear(); // Borra la "sesión"
-            window.location.href = "index.html"; // Redirige al login principal
+            localStorage.clear();
+            window.location.href = "index.html";
         });
     </script>
 </body>
