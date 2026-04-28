@@ -16,13 +16,13 @@
         body { 
             background-color: var(--fondo); 
             margin: 0; 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
         
-        /* Sidebar con Estilo Moderno */
+        /* Sidebar Fija e Inamovible */
         .sidebar {
             width: 260px;
             background: linear-gradient(180deg, var(--azul-deep) 0%, #1e293b 100%);
@@ -30,29 +30,30 @@
             display: flex;
             flex-direction: column;
             padding: 30px 0;
+            flex-shrink: 0;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
         }
 
         .sidebar-header {
             padding: 0 25px 30px;
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--celeste-soft);
-            letter-spacing: 1px;
             text-align: center;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .nav-links { display: flex; flex-direction: column; gap: 8px; padding: 20px 15px; }
+        .nav-links { display: flex; flex-direction: column; gap: 5px; padding: 20px 15px; }
 
         .nav-links a {
             color: #94a3b8;
             text-decoration: none;
             padding: 12px 20px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             border-radius: 12px;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
         .nav-links a:hover, .nav-links a.active {
@@ -62,105 +63,82 @@
 
         .nav-links a.active { background: var(--azul-brillante); box-shadow: 0 4px 12px rgba(26, 79, 219, 0.3); }
 
-        .btn-exit {
-            margin-top: auto;
-            margin: auto 15px 20px;
-            background: rgba(248, 113, 113, 0.1);
-            color: #f87171 !important;
-            border: 1px solid rgba(248, 113, 113, 0.2);
-            text-align: center;
-            border-radius: 12px;
-        }
-
-        .btn-exit:hover { background: #f87171 !important; color: white !important; }
-
-        /* Contenido Principal */
+        /* Área de Contenido Principal */
         .main-content {
             flex-grow: 1;
             padding: 40px;
-            display: flex;
-            flex-direction: column;
             position: relative;
+            overflow-y: auto; /* Permite scroll solo en el contenido, no en el menú */
         }
 
-        /* Caja de Usuario Estilizada */
+        /* Caja de Usuario Superior */
         .user-card {
             position: absolute;
             top: 30px;
             right: 40px;
             background: white;
-            padding: 12px 25px;
-            border-radius: 16px;
+            padding: 10px 20px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            gap: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            z-index: 100;
         }
 
         .user-icon {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background: var(--azul-brillante);
             color: white;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
+            font-weight: bold;
         }
 
-        /* Dashboard de Botones */
-        .dashboard-area {
-            margin: auto;
-            width: 100%;
-            max-width: 1000px;
+        /* Control de Secciones */
+        .section-panel { display: none; margin-top: 60px; animation: fadeIn 0.4s ease; }
+        .section-panel.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .welcome-header { margin-bottom: 40px; text-align: left; }
-        .welcome-header h2 { font-weight: 800; color: #1e293b; font-size: 2.4rem; margin: 0; }
-        .welcome-header p { color: #64748b; font-size: 1.1rem; }
+        /* Estilo Tabla Clientes */
+        .card-custom {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        }
 
+        .btn-table { padding: 4px 12px; font-size: 13px; font-weight: 600; border-radius: 6px; margin: 2px; }
+
+        /* Grid de Botones Dashboard */
         .options-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
 
-        .menu-btn {
+        .menu-item {
             background: white;
-            padding: 35px 20px;
-            border-radius: 24px;
-            text-decoration: none;
-            color: #334155;
-            font-weight: 700;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
             border: 1px solid #f1f5f9;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        .menu-btn span { font-size: 2.5rem; transition: transform 0.3s ease; }
-
-        .menu-btn:hover {
-            transform: translateY(-10px);
-            border-color: var(--azul-brillante);
-            color: var(--azul-brillante);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-        }
-
-        .menu-btn:hover span { transform: scale(1.2); }
-
-        .btn-full { grid-column: span 3; max-width: 320px; margin: 10px auto 0; }
-
-        @media (max-width: 992px) {
-            .options-grid { grid-template-columns: repeat(2, 1fr); }
-            .btn-full { grid-column: span 2; }
-        }
+        .menu-item:hover { transform: translateY(-5px); border-color: var(--azul-brillante); }
+        .menu-item i { font-size: 2.5rem; display: block; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -168,56 +146,4 @@
     <div class="sidebar">
         <div class="sidebar-header">SIA EXTERNALIZAR</div>
         <nav class="nav-links">
-            <a href="#" class="active">🏠 Inicio</a>
-            <a href="#">📊 Dashboard</a>
-            <a href="#">📝 Registro</a>
-            <a href="#">ℹ️ Información</a>
-            <a href="#">⚖️ Match Contable</a>
-            <a href="#">📥 Descargas</a>
-            <a href="#" id="btnExit" class="btn-exit">❌ Salir</a>
-        </nav>
-    </div>
-
-    <div class="main-content">
-        
-        <div class="user-card">
-            <div class="user-icon" id="userInitial">?</div>
-            <div>
-                <div id="userName" style="font-weight: 800; color: #1e293b; font-size: 0.95rem;">Usuario</div>
-                <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Administrador</div>
-            </div>
-        </div>
-
-        <div class="dashboard-area">
-            <div class="welcome-header">
-                <h2 id="saludoTxt">Bienvenido</h2>
-                <p>Gestiona tus procesos contables de forma eficiente.</p>
-            </div>
-
-            <div class="options-grid">
-                <a href="#" class="menu-btn"><span>📊</span> Dashboard</a>
-                <a href="#" class="menu-btn"><span>👥</span> Registro Clientes</a>
-                <a href="#" class="menu-btn"><span>📑</span> Carga de Información</a>
-                <a href="#" class="menu-btn"><span>⚖️</span> Match Contable</a>
-                <a href="#" class="menu-btn"><span>📚</span> Descarga Libros</a>
-                <a href="#" class="menu-btn"><span>🚀</span> Facturador Masivo</a>
-                <a href="#" class="menu-btn btn-full"><span>👤</span> Usuarios</a>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const nombre = localStorage.getItem('nombreUsuario') || "Invitado";
-        
-        document.getElementById('saludoTxt').innerText = "Bienvenido, " + nombre;
-        document.getElementById('userName').innerText = nombre;
-        document.getElementById('userInitial').innerText = nombre.charAt(0).toUpperCase();
-
-        document.getElementById('btnExit').addEventListener('click', function(e) {
-            e.preventDefault();
-            localStorage.clear();
-            window.location.href = "index.html";
-        });
-    </script>
-</body>
-</html>
+            <a
