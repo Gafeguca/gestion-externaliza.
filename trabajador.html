@@ -49,7 +49,7 @@
         .user-top-card {
             position: absolute; top: 25px; right: 40px; background: white;
             padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; z-index: 100;
         }
 
         .user-avatar {
@@ -75,9 +75,8 @@
         .card-btn:hover { transform: translateY(-5px); border-color: var(--azul-brillante); color: var(--azul-brillante); }
         .card-btn span { font-size: 2.2rem; display: block; margin-bottom: 12px; }
 
-        .btn-sia { background-color: var(--azul-botones) !important; border: none; color: white; font-size: 10px; padding: 6px 10px; font-weight: 600; }
+        .btn-sia { background-color: var(--azul-botones) !important; border: none; color: white; font-size: 11px; padding: 6px 12px; font-weight: 600; border-radius: 4px; }
         
-        /* BOTONES GESTION USUARIOS */
         .btn-user-mgmt {
             width: 50%; padding: 15px; border: 2px solid #64748b; background: white;
             border-radius: 10px; font-weight: 700; transition: 0.3s;
@@ -106,7 +105,7 @@
         
         <div class="user-top-card">
             <div class="user-avatar" id="uInitial">?</div>
-            <div id="uName" style="font-size: 14px; font-weight: 800;">Usuario</div>
+            <div id="uName" style="font-size: 14px; font-weight: 800;">Cargando...</div>
         </div>
 
         <div id="view-inicio" class="section-view active">
@@ -114,7 +113,7 @@
             <div class="grid-menu">
                 <div class="card-btn" onclick="showSection('dashboard')"><span>📊</span> Dashboard</div>
                 <div class="card-btn" onclick="showSection('registro')"><span>👥</span> Registro Clientes</div>
-                <div class="card-btn" onclick="showSection('carga')"><span>📝</span> Carga Información</div>
+                <div class="card-btn" onclick="showSection('carga')"><span>📝</span> Detalle Servicios y Carga Información</div>
                 <div class="card-btn" onclick="showSection('match')"><span>⚖️</span> Match Contable</div>
                 <div class="card-btn" onclick="showSection('descargas')"><span>📥</span> Descarga Libros</div>
                 <div class="card-btn" onclick="showSection('facturador')"><span>🚀</span> Facturador Masivo</div>
@@ -123,17 +122,45 @@
         </div>
 
         <div id="view-registro" class="section-view">
-            <h2 style="font-weight: 800; margin-bottom: 20px;">Clientes</h2>
+            <h2 style="font-weight: 800; margin-bottom: 20px;">Registro Clientes</h2>
             <div class="content-card">
                 <table class="table table-bordered align-middle text-center">
                     <thead class="table-light"><tr><th>Cliente</th><th>Rut Cliente</th><th>Acciones</th></tr></thead>
                     <tbody>
                         <tr><td>XIMENA ROGAT</td><td>76321836-8</td><td><button class="btn btn-sia">Ver Servicios Asociados</button></td></tr>
+                        <tr><td>W INSTITUTE SPA</td><td>76308593-7</td><td><button class="btn btn-sia">Ver Servicios Asociados</button></td></tr>
                     </tbody>
                 </table>
                 <div class="d-flex flex-column align-items-center gap-2 mt-4">
-                    <button class="btn btn-sia px-4 py-2">Carga Masiva Remuneraciones</button>
-                    <button class="btn btn-sia px-4 py-2">Cierre Masivo de Impuestos</button>
+                    <button class="btn btn-sia px-4 py-2" style="font-size: 13px;">Carga Masiva Remuneraciones</button>
+                    <button class="btn btn-sia px-4 py-2" style="font-size: 13px;">Cierre Masivo de Impuestos</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-carga" class="section-view">
+            <h2 class="text-center mb-4" style="font-weight: 800;">CARGA INFORMACIÓN</h2>
+            <div class="content-card">
+                <div class="d-flex justify-content-between mb-3 small">
+                    <div>Mostrar <select class="form-select-sm"><option>5</option></select> registros</div>
+                    <div>Buscar: <input type="text" class="form-control-sm"></div>
+                </div>
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-light"><tr><th>Cliente</th><th>Rut Cliente</th><th>Acciones</th></tr></thead>
+                    <tbody>
+                        <tr><td>Ximena Rogat</td><td>76321836-8</td><td><button class="btn btn-sia">Ver Más</button></td></tr>
+                        <tr><td>W INSTITUTE SPA</td><td>76308593-7</td><td><button class="btn btn-sia">Ver Más</button></td></tr>
+                        <tr><td>VSD Administraciones</td><td>77338689-7</td><td><button class="btn btn-sia">Ver Más</button></td></tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="text-muted small">Mostrando desde 1 hasta 5 de 225 registros</div>
+                    <nav><ul class="pagination pagination-sm mb-0">
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">...</a></li>
+                        <li class="page-item"><a class="page-link" href="#">45</a></li>
+                    </ul></nav>
                 </div>
             </div>
         </div>
@@ -142,10 +169,17 @@
             <h2 style="font-weight: 800; margin-bottom: 20px;">Match Contable</h2>
             <div class="content-card">
                 <table class="table table-bordered align-middle text-center" style="font-size: 11px;">
-                    <thead class="table-light"><tr><th>Cliente</th><th>Rut</th><th>Acciones</th></tr></thead>
+                    <thead class="table-light"><tr><th>Cliente</th><th>Rut Cliente</th><th>Acciones</th></tr></thead>
                     <tbody>
                         <tr><td>VSD ADMINISTRACIONES</td><td>77338689-7</td>
-                            <td><div class="d-flex flex-wrap gap-1 justify-content-center"><button class="btn btn-sia">Realizar Match</button><button class="btn btn-sia">Plan de Cuenta</button></div></td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                    <button class="btn btn-sia">Realizar Match</button>
+                                    <button class="btn btn-sia">Historial Match</button>
+                                    <button class="btn btn-sia">Plan de Cuenta</button>
+                                    <button class="btn btn-sia">Centro de Costos</button>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -153,7 +187,7 @@
         </div>
 
         <div id="view-descargas" class="section-view">
-            <h2 style="font-weight: 800; margin-bottom: 20px; text-align: center;">Descargas</h2>
+            <h2 class="text-center mb-4" style="font-weight: 800;">DESCARGA INFORME CLIENTES</h2>
             <div class="content-card">
                 <div class="row g-2 justify-content-center mb-4 p-3 bg-light rounded border">
                     <div class="col-auto"><label class="small fw-bold d-block">Desde</label><input type="date" class="form-control form-control-sm"></div>
@@ -162,7 +196,15 @@
                 </div>
                 <table class="table table-bordered align-middle text-center" style="font-size: 11px;">
                     <thead class="table-light"><tr><th>Cliente</th><th>Acciones</th></tr></thead>
-                    <tbody><tr><td>W INSTITUTE SPA</td><td><button class="btn btn-sia">Libro Diario</button> <button class="btn btn-sia">Balance 8 Col</button></td></tr></tbody>
+                    <tbody>
+                        <tr><td>W INSTITUTE SPA</td><td>
+                            <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                <button class="btn btn-sia">Libro Diario</button>
+                                <button class="btn btn-sia">Libro Mayor</button>
+                                <button class="btn btn-sia">Balance 8 Col</button>
+                            </div>
+                        </td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -178,8 +220,7 @@
             </div>
         </div>
 
-        <div id="view-dashboard" class="section-view"><h2 style="font-weight: 800;">Dashboard</h2><div class="content-card">Próximamente disponible...</div></div>
-        <div id="view-carga" class="section-view"><h2 style="font-weight: 800;">Carga Información</h2><div class="content-card">Área de subida de archivos...</div></div>
+        <div id="view-dashboard" class="section-view"><h2 style="font-weight: 800;">Dashboard</h2><div class="content-card">Módulo de estadísticas...</div></div>
         <div id="view-facturador" class="section-view"><h2 style="font-weight: 800;">Facturador Masivo</h2><div class="content-card">Módulo de facturación...</div></div>
 
     </main>
