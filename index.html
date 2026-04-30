@@ -3,62 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIA EXTERNALIZAR - Acceso de Prueba</title>
+    <title>SIA Externalizar — Acceso</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background-color: #1a4fdb; display: flex; justify-content: center; align-items: center; }
-        .login-card { background-color: white; padding: 50px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 90%; max-width: 1000px; display: flex; gap: 50px; align-items: center; }
-        .form-section { flex: 1.2; }
-        .form-section h1 { color: #0d3b0d; font-size: 32px; font-weight: 800; margin-bottom: 10px; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; }
-        .input-group input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9; box-sizing: border-box; font-size: 16px; }
-        .login-button { background-color: #67b9e8; color: white; border: none; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
-        .login-button:hover { background-color: #55a8d6; }
-        .image-section { flex: 1; display: flex; justify-content: center; }
-        .image-section img { max-width: 100%; height: auto; }
-        .badge-prueba { background: #fef3c7; color: #92400e; padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; margin-bottom: 20px; display: inline-block; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a4fdb 60%, #38bdf8 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+
+        .login-wrapper {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+            width: 100%; max-width: 960px;
+            display: flex; overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Lado izquierdo — imagen */
+        .login-visual {
+            flex: 1;
+            background: linear-gradient(160deg, #0f172a, #1a4fdb);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 50px 40px; color: white; text-align: center;
+        }
+
+        .login-visual .logo-circle {
+            width: 80px; height: 80px; border-radius: 20px;
+            background: rgba(255,255,255,0.12);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.4rem; margin-bottom: 24px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .login-visual h2 {
+            font-size: 1.7rem; font-weight: 900; letter-spacing: -0.5px;
+            margin-bottom: 12px; color: #38bdf8;
+        }
+
+        .login-visual p {
+            font-size: 0.9rem; color: rgba(255,255,255,0.65); line-height: 1.6;
+        }
+
+        .login-visual img {
+            max-width: 200px; margin-top: 36px; opacity: 0.85;
+            border-radius: 16px;
+        }
+
+        .feature-list {
+            margin-top: 36px; display: flex; flex-direction: column; gap: 14px; width: 100%;
+        }
+
+        .feature-item {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.07); border-radius: 12px; padding: 12px 16px;
+            font-size: 0.82rem; color: rgba(255,255,255,0.85); font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Lado derecho — formulario */
+        .login-form-side {
+            flex: 1.1;
+            padding: 60px 50px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .login-form-side .tagline {
+            font-size: 0.78rem; font-weight: 700; color: #1a4fdb;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+        }
+
+        .login-form-side h1 {
+            font-size: 2rem; font-weight: 900; color: #0f172a;
+            margin-bottom: 6px; letter-spacing: -0.5px;
+        }
+
+        .login-form-side .subtitle {
+            font-size: 0.88rem; color: #64748b; margin-bottom: 36px;
+        }
+
+        .field { margin-bottom: 20px; }
+
+        .field label {
+            display: block; font-size: 0.78rem; font-weight: 700;
+            color: #475569; text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 8px;
+        }
+
+        .field input {
+            width: 100%; padding: 14px 16px;
+            border: 1.5px solid #e2e8f0; border-radius: 12px;
+            font-size: 0.95rem; color: #0f172a;
+            background: #f8fafc; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field input:focus {
+            border-color: #1a4fdb;
+            box-shadow: 0 0 0 4px rgba(26,79,219,0.1);
+            background: white;
+        }
+
+        .btn-login {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, #1a4fdb, #38bdf8);
+            color: white; border: none; border-radius: 12px;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,79,219,0.35); }
+        .btn-login:active { transform: translateY(0); }
+        .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .spinner {
+            width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.4);
+            border-top-color: white; border-radius: 50%;
+            animation: spin 0.7s linear infinite; display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg {
+            display: none; margin-top: 16px;
+            background: #fef2f2; border: 1px solid #fecaca;
+            color: #dc2626; border-radius: 10px;
+            padding: 12px 16px; font-size: 0.85rem; font-weight: 600; text-align: center;
+        }
+
+        .footer-note {
+            margin-top: 32px; text-align: center;
+            font-size: 0.75rem; color: #94a3b8;
+        }
+
+        @media (max-width: 680px) {
+            .login-visual { display: none; }
+            .login-form-side { padding: 40px 28px; }
+        }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <div class="form-section">
-            <div class="badge-prueba">MODO DE PRUEBA ACTIVO</div>
-            <h1>Bienvenid@ a Externalizar</h1>
-            <p>Puedes ingresar cualquier dato para probar el panel.</p>
-            <form id="loginForm">
-                <div class="input-group">
-                    <label>RUT</label>
-                    <input type="text" id="rutInput" placeholder="Ej: 12345678-9">
+
+    <div class="login-wrapper">
+
+        <div class="login-visual">
+            <div class="logo-circle">📊</div>
+            <h2>SIA EXTERNALIZAR</h2>
+            <p>Sistema Integral de Administración Contable</p>
+            <img src="calculadora.jpg" alt="SIA">
+            <div class="feature-list">
+                <div class="feature-item">✅ Descarga automática SII</div>
+                <div class="feature-item">🏦 Conciliación bancaria</div>
+                <div class="feature-item">📒 Libro diario automático</div>
+                <div class="feature-item">📥 Exportación Excel</div>
+            </div>
+        </div>
+
+        <div class="login-form-side">
+            <div class="tagline">Portal de acceso</div>
+            <h1>Bienvenid@ de vuelta</h1>
+            <p class="subtitle">Ingresa tus credenciales para continuar</p>
+
+            <form id="loginForm" autocomplete="on">
+                <div class="field">
+                    <label>Usuario / RUT</label>
+                    <input type="text" id="userInput" placeholder="Ej: 10200414-0" required autocomplete="username">
                 </div>
-                <div class="input-group">
-                    <label>CONTRASEÑA</label>
-                    <input type="password" id="passInput" placeholder="**********">
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="passInput" placeholder="••••••••" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="login-button" id="btnIngresar">Ingresar al Panel</button>
+                <button type="submit" class="btn-login" id="btnLogin">
+                    <span id="btnText">Ingresar al sistema</span>
+                    <div class="spinner" id="spinner"></div>
+                </button>
+                <div class="error-msg" id="mensajeError">⚠ Usuario o contraseña incorrectos</div>
             </form>
+
+            <div class="footer-note">
+                SIA Externalizar &copy; 2025 &nbsp;·&nbsp; Acceso restringido
+            </div>
         </div>
-        <div class="image-section">
-            <img src="calculadora.jpg" alt="Calculadora">
-        </div>
+
     </div>
 
     <script>
-        // Limpiamos cualquier sesión previa al cargar
         localStorage.clear();
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Evita que la página se recargue solo
-            
-            const btn = document.getElementById('btnIngresar');
-            btn.innerText = "Entrando...";
-            btn.disabled = true;
+        const form     = document.getElementById('loginForm');
+        const btnLogin = document.getElementById('btnLogin');
+        const btnText  = document.getElementById('btnText');
+        const spinner  = document.getElementById('spinner');
+        const errorDiv = document.getElementById('mensajeError');
+        const API_URL  = "https://sheetdb.io/api/v1/bcicxw6vxc36j";
 
-            // --- SALTO DIRECTO PARA PRUEBAS ---
-            // Guardamos un nombre ficticio para que la otra página lo muestre
-            localStorage.setItem('nombreUsuario', 'Invitado de Desarrollo');
-            
-            // Redirigir de inmediato a la página del trabajador
-            window.location.href = "trabajador.html";
+        function setLoading(on) {
+            btnLogin.disabled = on;
+            btnText.style.display  = on ? 'none' : 'inline';
+            spinner.style.display  = on ? 'block' : 'none';
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            errorDiv.style.display = 'none';
+            setLoading(true);
+
+            const userIn = document.getElementById('userInput').value.trim().toLowerCase();
+            const passIn = document.getElementById('passInput').value.trim();
+
+            try {
+                const response = await fetch(API_URL);
+                const usuarios = await response.json();
+
+                const encontrado = usuarios.find(u => {
+                    const excelUser = String(u.usuario || '').trim().toLowerCase();
+                    const excelRut  = String(u.rut     || '').trim().toLowerCase();
+                    const excelClave = String(u.clave  || '').trim();
+                    return (excelUser === userIn || excelRut === userIn) && excelClave === passIn;
+                });
+
+                if (encontrado) {
+                    localStorage.setItem('nombreUsuario', encontrado.usuario || encontrado.rut);
+                    localStorage.setItem('rolUsuario', encontrado.rol || 'Contador');
+                    window.location.href = 'panel.html';
+                } else {
+                    errorDiv.style.display = 'block';
+                    setLoading(false);
+                }
+            } catch (err) {
+                errorDiv.textContent = '⚠ Error de conexión. Revisa tu internet.';
+                errorDiv.style.display = 'block';
+                setLoading(false);
+            }
         });
     </script>
 </body>
