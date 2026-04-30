@@ -215,38 +215,12 @@
             spinner.style.display  = on ? 'block' : 'none';
         }
 
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
-            errorDiv.style.display = 'none';
-            setLoading(true);
-
-            const userIn = document.getElementById('userInput').value.trim().toLowerCase();
-            const passIn = document.getElementById('passInput').value.trim();
-
-            try {
-                const response = await fetch(API_URL);
-                const usuarios = await response.json();
-
-                const encontrado = usuarios.find(u => {
-                    const excelUser = String(u.usuario || '').trim().toLowerCase();
-                    const excelRut  = String(u.rut     || '').trim().toLowerCase();
-                    const excelClave = String(u.clave  || '').trim();
-                    return (excelUser === userIn || excelRut === userIn) && excelClave === passIn;
-                });
-
-                if (encontrado) {
-                    localStorage.setItem('nombreUsuario', encontrado.usuario || encontrado.rut);
-                    localStorage.setItem('rolUsuario', encontrado.rol || 'Contador');
-                    window.location.href = 'panel.html';
-                } else {
-                    errorDiv.style.display = 'block';
-                    setLoading(false);
-                }
-            } catch (err) {
-                errorDiv.textContent = '⚠ Error de conexión. Revisa tu internet.';
-                errorDiv.style.display = 'block';
-                setLoading(false);
-            }
+            const userIn = document.getElementById('userInput').value.trim() || 'Usuario';
+            localStorage.setItem('nombreUsuario', userIn);
+            localStorage.setItem('rolUsuario', 'Administrador');
+            window.location.href = 'panel.html';
         });
     </script>
 </body>
