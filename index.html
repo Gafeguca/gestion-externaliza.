@@ -179,11 +179,11 @@
             <form id="loginForm" autocomplete="on">
                 <div class="field">
                     <label>Usuario / RUT</label>
-                    <input type="text" id="userInput" placeholder="Ej: 10200414-0" required autocomplete="username">
+                    <input type="text" id="userInput" placeholder="Ej: 10200414-0" autocomplete="username">
                 </div>
                 <div class="field">
                     <label>Contraseña</label>
-                    <input type="password" id="passInput" placeholder="••••••••" required autocomplete="current-password">
+                    <input type="password" id="passInput" placeholder="••••••••" autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn-login" id="btnLogin">
                     <span id="btnText">Ingresar al sistema</span>
@@ -200,22 +200,12 @@
     </div>
 
     <script>
-        localStorage.clear();
-
-        const form     = document.getElementById('loginForm');
-        const btnLogin = document.getElementById('btnLogin');
-        const btnText  = document.getElementById('btnText');
-        const spinner  = document.getElementById('spinner');
-        const errorDiv = document.getElementById('mensajeError');
-        const API_URL  = "https://sheetdb.io/api/v1/bcicxw6vxc36j";
-
-        function setLoading(on) {
-            btnLogin.disabled = on;
-            btnText.style.display  = on ? 'none' : 'inline';
-            spinner.style.display  = on ? 'block' : 'none';
+        // Si ya hay sesión activa, ir directo al panel
+        if (localStorage.getItem('nombreUsuario')) {
+            window.location.href = 'panel.html';
         }
 
-        form.addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const userIn = document.getElementById('userInput').value.trim() || 'Usuario';
             localStorage.setItem('nombreUsuario', userIn);
