@@ -3,222 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIA EXTERNALIZAR - Panel Pro</title>
+    <meta http-equiv="refresh" content="0; url=panel.html">
+    <title>Redirigiendo...</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --azul-deep: #0f172a;
-            --azul-brillante: #1a4fdb;
-            --celeste-soft: #38bdf8;
-            --fondo: #f1f5f9;
-            --azul-botones: #337ab7;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background-color: var(--fondo); 
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            display: flex; height: 100vh; width: 100vw; overflow: hidden;
-        }
+        :root { --azul-p: #1a4fdb; --oscuro: #0f172a; --fondo: #f8fafc; --texto: #1e293b; }
+        body { display: flex; background-color: var(--fondo); min-height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
         
-        .sidebar {
-            width: 260px; background: #1e293b; color: white;
-            display: flex; flex-direction: column; flex-shrink: 0; height: 100%;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-        }
-
-        .sidebar-header {
-            padding: 25px; font-weight: 900; font-size: 1.1rem; color: var(--celeste-soft);
-            text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase;
-        }
-
-        .nav-links { padding: 15px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
-
-        .nav-links a {
-            color: #94a3b8; text-decoration: none; padding: 10px 15px;
-            font-size: 0.85rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
-        }
-
-        .nav-links a:hover, .nav-links a.active { background: rgba(56, 189, 248, 0.1); color: white; }
-        .nav-links a.active { background: var(--azul-brillante); }
-
-        .main-container { flex-grow: 1; height: 100%; overflow-y: auto; position: relative; padding: 40px; }
-
-        .user-top-card {
-            position: absolute; top: 25px; right: 40px; background: white;
-            padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; z-index: 100;
-        }
-
-        .user-avatar {
-            width: 35px; height: 35px; background: var(--azul-brillante);
-            color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;
-        }
-
-        .section-view { display: none; animation: fadeIn 0.3s ease; margin-top: 50px; }
-        .section-view.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .content-card { 
-            background: white; border-radius: 15px; padding: 25px; border: 1px solid #e2e8f0; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); max-height: 70vh; overflow-y: auto;
-        }
-
-        .grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .card-btn {
-            background: white; padding: 35px 15px; border-radius: 20px;
-            text-align: center; cursor: pointer; border: 1px solid #f1f5f9;
-            transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            font-weight: 700; color: #334155; font-size: 0.95rem;
-        }
-        .card-btn:hover { transform: translateY(-5px); border-color: var(--azul-brillante); color: var(--azul-brillante); }
-        .card-btn span { font-size: 2.2rem; display: block; margin-bottom: 12px; }
-
-        .btn-sia { background-color: var(--azul-botones) !important; border: none; color: white; font-size: 11px; padding: 6px 12px; font-weight: 600; border-radius: 4px; }
+        .sidebar { width: 260px; background: var(--oscuro); color: white; padding: 30px 20px; position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar h4 { color: #38bdf8; font-weight: 800; text-transform: uppercase; text-align: center; font-size: 1.1rem; margin-bottom: 40px; }
         
-        .btn-user-mgmt {
-            width: 50%; padding: 15px; border: 2px solid #64748b; background: white;
-            border-radius: 10px; font-weight: 700; transition: 0.3s;
-        }
-        .btn-user-mgmt:hover { background: #f8fafc; border-color: var(--azul-brillante); }
+        .nav-link { color: #94a3b8; padding: 12px 15px; border-radius: 12px; text-decoration: none; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; text-transform: uppercase; font-size: 0.85rem; transition: 0.2s; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-link.active { background: var(--azul-p); color: white; box-shadow: 0 4px 12px rgba(26, 79, 219, 0.3); }
+        
+        .content { margin-left: 260px; flex-grow: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+        .welcome-header { text-align: center; margin-bottom: 30px; }
+        .welcome-header h2 { font-weight: 800; color: var(--texto); font-size: 2.2rem; }
+        
+        .options-menu { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 12px; }
+        .btn-panel { background: white; padding: 18px; border-radius: 14px; text-align: center; text-decoration: none; color: #475569; border: 1px solid #e2e8f0; font-weight: 500; transition: 0.25s; }
+        .btn-panel:hover { border-color: var(--azul-p); color: var(--azul-p); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        
+        .logout { margin-top: auto; color: #f87171 !important; font-weight: 600; border: 1px solid rgba(248,113,113,0.2); justify-content: center; }
+        .logout:hover { background: rgba(248, 113, 113, 0.1) !important; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="sidebar-header">SIA EXTERNALIZAR</div>
-        <nav class="nav-links">
-            <a onclick="showSection('inicio')" id="nav-inicio" class="active">🏠 Inicio</a>
-            <a onclick="showSection('dashboard')" id="nav-dashboard">📊 Dashboard</a>
-            <a onclick="showSection('registro')" id="nav-registro">👥 Registro Clientes</a>
-            <a onclick="showSection('carga')" id="nav-carga">📝 Carga Información</a>
-            <a onclick="showSection('match')" id="nav-match">⚖️ Match Contable</a>
-            <a onclick="showSection('descargas')" id="nav-descargas">📥 Descargas</a>
-            <a onclick="showSection('facturador')" id="nav-facturador">🚀 Facturador Masivo</a>
-            <a onclick="showSection('usuarios')" id="nav-usuarios">👤 Usuarios</a>
-            <a onclick="window.location.href='index.html'" style="color: #f87171 !important; margin-top: 20px;">❌ Salir</a>
+    <div class="sidebar">
+        <h4>SIA EXTERNALIZAR</h4>
+        <nav>
+            <a href="trabajador.html" class="nav-link active">🏠 INICIO</a>
+            <a href="#" class="nav-link">📊 DASHBOARD</a>
+            <a href="#" class="nav-link">📝 REGISTRO</a>
+            <a href="#" class="nav-link">ℹ️ INFORMACION</a>
+            <a href="#" class="nav-link">🤝 MATCH</a>
+            <a href="#" class="nav-link">📥 DESCARGAS</a>
+            <a href="#" class="nav-link">👥 USUARIOS</a>
         </nav>
-    </aside>
-
-    <main class="main-container">
         
-        <div class="user-top-card">
-            <div class="user-avatar" id="uInitial">?</div>
-            <div id="uName" style="font-size: 14px; font-weight: 800;">Cargando...</div>
+        <a href="#" class="nav-link logout" id="btnExit">❌ SALIR</a>
+    </div>
+
+    <div class="content">
+        <div class="welcome-header">
+            <h2 id="saludoTxt">Bienvenido</h2>
+            <p style="color: #64748b;">Seleccione la gestión que desea realizar</p>
         </div>
 
-        <div id="view-inicio" class="section-view active">
-            <h1 style="font-weight: 800; margin-bottom: 30px;">Panel Principal</h1>
-            <div class="grid-menu">
-                <div class="card-btn" onclick="showSection('dashboard')"><span>📊</span> Dashboard</div>
-                <div class="card-btn" onclick="showSection('registro')"><span>👥</span> Registro Clientes</div>
-                <div class="card-btn" onclick="showSection('carga')"><span>📝</span> Detalle Servicios y Carga Información</div>
-                <div class="card-btn" onclick="showSection('match')"><span>⚖️</span> Match Contable</div>
-                <div class="card-btn" onclick="showSection('descargas')"><span>📥</span> Descarga Libros</div>
-                <div class="card-btn" onclick="showSection('facturador')"><span>🚀</span> Facturador Masivo</div>
-                <div class="card-btn" style="grid-column: span 3; max-width: 300px; margin: auto;" onclick="showSection('usuarios')"><span>👤</span> Usuarios</div>
-            </div>
+        <div class="options-menu">
+            <a href="#" class="btn-panel">Dashboard</a>
+            <a href="../registro_clientes_sheetdb.html" class="btn-panel">Registro y actualización de Clientes</a>
+            <a href="#" class="btn-panel">Detalle Servicios y Carga Información</a>
+            <a href="#" class="btn-panel">Match Contable</a>
+            <a href="#" class="btn-panel">Descarga Libros</a>
+            <a href="#" class="btn-panel">Facturador Masivo</a>
+            <a href="#" class="btn-panel">Gestión de Usuarios</a>
         </div>
-
-        <div id="view-registro" class="section-view">
-            <h2 style="font-weight: 800; margin-bottom: 20px;">Registro Clientes</h2>
-            <div class="content-card">
-                <table class="table table-bordered align-middle text-center">
-                    <thead class="table-light"><tr><th>Cliente</th><th>Rut Cliente</th><th>Acciones</th></tr></thead>
-                    <tbody id="body-registro">
-                        </tbody>
-                </table>
-                <div class="d-flex flex-column align-items-center gap-2 mt-4">
-                    <button class="btn btn-sia px-4 py-2" style="font-size: 13px;">Carga Masiva Remuneraciones</button>
-                    <button class="btn btn-sia px-4 py-2" style="font-size: 13px;">Cierre Masivo de Impuestos</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-carga" class="section-view">
-            <h2 class="text-center mb-4" style="font-weight: 800;">CARGA INFORMACIÓN</h2>
-            <div class="content-card">
-                <div class="d-flex justify-content-between mb-3 small">
-                    <div>Mostrar <select class="form-select-sm"><option>Todos</option></select> registros</div>
-                    <div>Buscar: <input type="text" id="buscador-carga" class="form-control-sm" placeholder="Filtrar RUT..."></div>
-                </div>
-                <table class="table table-bordered align-middle text-center">
-                    <thead class="table-light"><tr><th>Cliente</th><th>Rut Cliente</th><th>Acciones</th></tr></thead>
-                    <tbody id="body-carga">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="view-match" class="section-view"><h2 style="font-weight: 800;">Match Contable</h2><div class="content-card">Cargando datos...</div></div>
-        <div id="view-descargas" class="section-view"><h2 style="font-weight: 800;">Descargas</h2><div class="content-card">Cargando datos...</div></div>
-        <div id="view-usuarios" class="section-view"><h2 style="font-weight: 800;">Gestión Usuarios</h2><div class="content-card">Módulo de administración...</div></div>
-        <div id="view-dashboard" class="section-view"><h2 style="font-weight: 800;">Dashboard</h2><div class="content-card">Estadísticas en tiempo real...</div></div>
-        <div id="view-facturador" class="section-view"><h2 style="font-weight: 800;">Facturador Masivo</h2><div class="content-card">Módulo de facturación...</div></div>
-
-    </main>
+    </div>
 
     <script>
-        const API_URL = "https://sheetdb.io/api/v1/dcvgd2ct1vira";
-
-        // Función para cambiar de sección
-        function showSection(id) {
-            document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-            const target = document.getElementById('view-' + id);
-            if(target) target.classList.add('active');
-            const nav = document.getElementById('nav-' + id);
-            if(nav) nav.classList.add('active');
-        }
-
-        // Función para cargar datos reales desde SheetDB
-        async function cargarDatosSheetDB() {
-            try {
-                const response = await fetch(API_URL);
-                const datos = await response.json();
-
-                const bodyRegistro = document.getElementById('body-registro');
-                const bodyCarga = document.getElementById('body-carga');
-
-                // Limpiar tablas antes de insertar
-                bodyRegistro.innerHTML = "";
-                bodyCarga.innerHTML = "";
-
-                datos.forEach(item => {
-                    // Solo agregamos si hay un RUT (evitar filas vacías)
-                    if (item.RUT) {
-                        // Fila para Registro
-                        const trReg = `<tr>
-                            <td>${item.Empresa || 'Sin nombre'}</td>
-                            <td>${item.RUT}</td>
-                            <td><button class="btn btn-sia">Ver Servicios Asociados</button></td>
-                        </tr>`;
-                        bodyRegistro.innerHTML += trReg;
-
-                        // Fila para Carga
-                        const trCarga = `<tr>
-                            <td>${item.Empresa || 'Sin nombre'}</td>
-                            <td>${item.RUT}</td>
-                            <td><button class="btn btn-sia">Ver Más</button></td>
-                        </tr>`;
-                        bodyCarga.innerHTML += trCarga;
-                    }
-                });
-
-                console.log("✅ Datos cargados correctamente");
-            } catch (error) {
-                console.error("❌ Error al cargar datos:", error);
+        // Función para validar sesión y poner el nombre
+        function validarSesion() {
+            const nombre = localStorage.getItem('nombreUsuario');
+            if (!nombre) {
+                // Si no hay sesión, manda al login de inmediato
+                window.location.href = "htmll.html";
+            } else {
+                document.getElementById('saludoTxt').innerText = "Bienvenido, " + nombre;
             }
         }
 
-        // Configuración inicial
-        const name = localStorage.getItem('nombreUsuario') || "Usuario Pro";
-        document.getElementById('uName').innerText = name;
-        document.getElementById('uInitial').innerText = name.charAt(0).toUpperCase();
+        // Ejecutar al cargar la página
+        validarSesion();
 
-        // Ejecutar carga al abrir
-        cargarDatosSheetDB();
+        // Lógica del botón Salir
+        document.getElementById('btnExit').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear(); // Borra la memoria
+            window.location.href = "htmll.html"; // Redirige
+        });
     </script>
 </body>
 </html>
