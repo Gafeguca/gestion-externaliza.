@@ -317,8 +317,37 @@
 </head>
 <body>
 
+    <!-- ===== PANTALLA LOGIN ===== -->
+    <div id="login-screen" style="position:fixed;inset:0;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);display:flex;align-items:center;justify-content:center;z-index:9999;">
+        <div style="background:#fff;border-radius:20px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 25px 60px rgba(0,0,0,0.4);">
+            <div style="text-align:center;margin-bottom:32px;">
+                <div style="font-size:2.4rem;margin-bottom:10px;">🔐</div>
+                <h1 style="font-size:1.4rem;font-weight:900;color:#0f172a;margin:0;">SIA EXTERNALIZAR</h1>
+                <p style="color:#64748b;font-size:0.88rem;margin-top:6px;">Ingresa con tu RUT y contraseña</p>
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="font-size:0.82rem;font-weight:700;color:#475569;display:block;margin-bottom:6px;">RUT</label>
+                <input type="text" id="login-rut" placeholder="12345678-9" onkeydown="if(event.key==='Enter')loginSubmit()"
+                    style="width:100%;padding:12px 16px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.95rem;outline:none;box-sizing:border-box;transition:border 0.2s;"
+                    onfocus="this.style.borderColor='#337ab7'" onblur="this.style.borderColor='#e2e8f0'">
+            </div>
+            <div style="margin-bottom:24px;">
+                <label style="font-size:0.82rem;font-weight:700;color:#475569;display:block;margin-bottom:6px;">Contraseña</label>
+                <input type="password" id="login-clave" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginSubmit()"
+                    style="width:100%;padding:12px 16px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.95rem;outline:none;box-sizing:border-box;transition:border 0.2s;"
+                    onfocus="this.style.borderColor='#337ab7'" onblur="this.style.borderColor='#e2e8f0'">
+            </div>
+            <div id="login-error" style="display:none;background:#fee2e2;color:#991b1b;border-radius:8px;padding:10px 14px;font-size:0.84rem;font-weight:600;margin-bottom:16px;"></div>
+            <button onclick="loginSubmit()" id="login-btn"
+                style="width:100%;padding:14px;background:#337ab7;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:background 0.2s;"
+                onmouseover="this.style.background='#1a5a99'" onmouseout="this.style.background='#337ab7'">
+                Ingresar
+            </button>
+        </div>
+    </div>
+
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="app-sidebar" style="display:none;">
         <div class="sidebar-header">SIA EXTERNALIZAR</div>
         <nav class="nav-links">
             <a onclick="showSection('inicio')" id="nav-inicio" class="active">🏠 Inicio</a>
@@ -329,12 +358,13 @@
             <a onclick="showSection('descargas')" id="nav-descargas">📥 Descargas</a>
             <a onclick="showSection('facturador')" id="nav-facturador">🚀 Facturador Masivo</a>
             <a onclick="showSection('usuarios')" id="nav-usuarios">👤 Usuarios</a>
+            <a onclick="showSection('bot')" id="nav-bot">🤖 Bot SII</a>
             <a onclick="cerrarSesion()" style="color: #f87171 !important; margin-top: 20px;">❌ Salir</a>
         </nav>
     </aside>
 
     <!-- MAIN -->
-    <main class="main-container">
+    <main class="main-container" id="app-main" style="display:none;">
 
         <div class="user-top-card">
             <div class="user-avatar" id="uInitial">?</div>
@@ -352,7 +382,8 @@
                 <div class="card-btn" onclick="showSection('match')"><span>⚖️</span> Match Contable</div>
                 <div class="card-btn" onclick="showSection('descargas')"><span>📥</span> Descarga Libros</div>
                 <div class="card-btn" onclick="showSection('facturador')"><span>🚀</span> Facturador Masivo</div>
-                <div class="card-btn" style="grid-column: span 3; max-width: 300px; margin: auto;" onclick="showSection('usuarios')"><span>👤</span> Usuarios</div>
+                <div class="card-btn" onclick="showSection('usuarios')"><span>👤</span> Usuarios</div>
+                <div class="card-btn" onclick="showSection('bot')"><span>🤖</span> Bot SII</div>
             </div>
         </div>
 
@@ -1007,6 +1038,75 @@
             </div>
         </div>
 
+        <!-- ===== BOT SII ===== -->
+        <div id="view-bot" class="section-view">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+                <h2 style="font-weight:800;margin:0;">🤖 Bot SII</h2>
+                <div style="display:flex;gap:8px;">
+                    <button onclick="botIniciarAhora()" id="btn-bot-iniciar" class="btn btn-sia px-4 py-2" style="font-size:0.85rem;">▶ Ejecutar Ahora</button>
+                    <button onclick="botRefrescar()" class="btn px-3 py-2" style="font-size:0.85rem;border:1px solid #e2e8f0;background:#fff;">&#x21bb; Refrescar</button>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            <div id="bot-alertas"></div>
+
+            <!-- Estado actual -->
+            <div class="content-card mb-3">
+                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px;">
+                    <span id="bot-badge" class="bot-estado-badge detenido">● Detenido</span>
+                    <span style="font-size:0.83rem;color:#64748b;">Próxima ejecución automática: <strong id="bot-proxima">00:00 y 12:00 diario</strong></span>
+                    <span style="font-size:0.83rem;color:#64748b;">Duración último ciclo: <strong id="bot-duracion">—</strong></span>
+                </div>
+                <div style="font-size:0.84rem;font-weight:700;color:#475569;margin-bottom:4px;">Procesando: <span id="bot-actual" style="color:#337ab7;">—</span></div>
+                <div class="bot-barra"><div class="bot-barra-fill" id="bot-barra" style="width:0%"></div></div>
+                <div style="display:flex;gap:24px;margin-top:10px;flex-wrap:wrap;">
+                    <div style="text-align:center;">
+                        <div style="font-size:1.4rem;font-weight:800;color:#337ab7;" id="bot-total">0</div>
+                        <div style="font-size:0.75rem;color:#64748b;">Total clientes</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:1.4rem;font-weight:800;color:#16a34a;" id="bot-ok">0</div>
+                        <div style="font-size:0.75rem;color:#64748b;">Exitosos</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:1.4rem;font-weight:800;color:#dc2626;" id="bot-fallos">0</div>
+                        <div style="font-size:0.75rem;color:#64748b;">Fallaron</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:1.4rem;font-weight:800;color:#f59e0b;" id="bot-pct">—</div>
+                        <div style="font-size:0.75rem;color:#64748b;">% éxito</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fallos lista -->
+            <div class="content-card mb-3" id="bot-fallos-card" style="display:none;">
+                <h4 style="font-size:0.9rem;font-weight:700;color:#dc2626;margin-bottom:10px;">⚠️ Clientes con fallo en último ciclo</h4>
+                <div id="bot-fallos-lista" style="font-size:0.82rem;"></div>
+            </div>
+
+            <!-- Log en vivo -->
+            <div class="content-card mb-3" id="bot-log-live-card" style="display:none;">
+                <h4 style="font-size:0.9rem;font-weight:700;margin-bottom:8px;">📶 Log en vivo (ciclo actual)</h4>
+                <div class="bot-log-box" id="bot-log-live"></div>
+            </div>
+
+            <!-- Historial de logs -->
+            <div class="content-card">
+                <h4 style="font-size:0.9rem;font-weight:700;margin-bottom:12px;">📁 Archivos de Log (carpeta logs/)</h4>
+                <div id="bot-logs-lista"><p style="color:#94a3b8;font-size:0.85rem;">Cargando...</p></div>
+                <!-- Visor de log seleccionado -->
+                <div id="bot-log-viewer" style="display:none;margin-top:14px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <strong id="bot-log-viewer-nombre" style="font-size:0.85rem;color:#337ab7;"></strong>
+                        <button onclick="document.getElementById('bot-log-viewer').style.display='none'" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1rem;">&#x2715;</button>
+                    </div>
+                    <div class="bot-log-box" id="bot-log-viewer-content"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== USUARIOS ===== -->
         <div id="view-usuarios" class="section-view">
 
@@ -1089,6 +1189,10 @@
                         <div>
                             <label style="display:block;text-align:center;font-size:0.88rem;font-weight:600;color:#1e293b;margin-bottom:6px;">Email</label>
                             <input type="email" id="cru-email" placeholder="" style="width:100%;padding:10px 16px;border:1px solid #cbd5e1;border-radius:20px;font-size:0.9rem;outline:none;box-sizing:border-box;">
+                        </div>
+                        <div style="grid-column:span 2;">
+                            <label style="display:block;text-align:center;font-size:0.88rem;font-weight:600;color:#1e293b;margin-bottom:6px;">Contraseña</label>
+                            <input type="password" id="cru-clave" placeholder="Contraseña para ingresar al sistema" style="width:100%;padding:10px 16px;border:1px solid #cbd5e1;border-radius:20px;font-size:0.9rem;outline:none;box-sizing:border-box;">
                         </div>
                     </div>
                     <button onclick="crearUsuarioNuevo()"
@@ -3532,14 +3636,76 @@
             }, 800);
         }
 
-        // ===================== USUARIOS =====================
-        const USR_KEY = 'sia_usuarios';
-        function _getUsuarios() {
-            try { return JSON.parse(localStorage.getItem(USR_KEY) || '[]'); } catch { return []; }
-        }
-        function _saveUsuarios(arr) { localStorage.setItem(USR_KEY, JSON.stringify(arr)); }
+        // ===================== USUARIOS (API) =====================
+        const API = 'http://localhost:5000';
+        let _usrCache = [];
+        let _sesionUsuario = null;
 
-        const USR_PANELS = ['menu','administrar','crear','externos','crear-externo','historial'];
+        // ── LOGIN ──────────────────────────────────────────────────────
+        async function loginSubmit() {
+            const rut   = document.getElementById('login-rut').value.trim();
+            const clave = document.getElementById('login-clave').value;
+            const errEl = document.getElementById('login-error');
+            const btn   = document.getElementById('login-btn');
+            errEl.style.display = 'none';
+            if (!rut || !clave) { errEl.textContent = 'Ingresa RUT y contraseña.'; errEl.style.display = ''; return; }
+            btn.textContent = 'Verificando...'; btn.disabled = true;
+            try {
+                const r = await fetch(`${API}/auth/login`, {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ rut, clave })
+                });
+                const d = await r.json();
+                if (!r.ok) {
+                    errEl.textContent = d.error || 'RUT o contraseña incorrectos';
+                    errEl.style.display = '';
+                    btn.textContent = 'Ingresar'; btn.disabled = false;
+                    return;
+                }
+                _sesionUsuario = d.usuario;
+                sessionStorage.setItem('sia_sesion', JSON.stringify(_sesionUsuario));
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-sidebar').style.display = '';
+                document.getElementById('app-main').style.display = '';
+                const nom = _sesionUsuario.nombre || 'Usuario';
+                document.getElementById('uName').textContent = nom;
+                document.getElementById('uInitial').textContent = nom.charAt(0).toUpperCase();
+            } catch {
+                errEl.textContent = 'No se puede conectar al servidor. Verifica que esté corriendo.';
+                errEl.style.display = '';
+                btn.textContent = 'Ingresar'; btn.disabled = false;
+            }
+        }
+
+        function cerrarSesion() {
+            sessionStorage.removeItem('sia_sesion');
+            _sesionUsuario = null;
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('app-sidebar').style.display = 'none';
+            document.getElementById('app-main').style.display = 'none';
+            document.getElementById('login-rut').value = '';
+            document.getElementById('login-clave').value = '';
+            document.getElementById('login-error').style.display = 'none';
+            document.getElementById('login-btn').textContent = 'Ingresar';
+            document.getElementById('login-btn').disabled = false;
+        }
+
+        // Restaurar sesión si ya estaba logueado
+        (function() {
+            const s = sessionStorage.getItem('sia_sesion');
+            if (s) {
+                try {
+                    _sesionUsuario = JSON.parse(s);
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('app-sidebar').style.display = '';
+                    document.getElementById('app-main').style.display = '';
+                    const nom = _sesionUsuario.nombre || 'Usuario';
+                    document.getElementById('uName').textContent = nom;
+                    document.getElementById('uInitial').textContent = nom.charAt(0).toUpperCase();
+                } catch { sessionStorage.removeItem('sia_sesion'); }
+            }
+        })();
+
         function usuariosIrA(panel) {
             document.getElementById('usr-menu-principal').style.display        = panel === 'menu'          ? '' : 'none';
             document.getElementById('usr-panel-administrar').style.display     = panel === 'administrar'   ? '' : 'none';
@@ -3547,148 +3713,166 @@
             document.getElementById('usr-panel-externos').style.display        = panel === 'externos'      ? '' : 'none';
             document.getElementById('usr-panel-crear-externo').style.display   = panel === 'crear-externo' ? '' : 'none';
             document.getElementById('usr-panel-historial').style.display       = panel === 'historial'     ? '' : 'none';
-            if (panel === 'administrar') renderTablaUsuarios();
+            if (panel === 'administrar') cargarYRenderUsuarios();
+            if (panel === 'externos')    cargarYRenderExternos();
             if (panel === 'historial')   renderHistorialUsuarios();
         }
 
+        async function cargarYRenderUsuarios() {
+            try {
+                const r = await fetch(`${API}/usuarios`);
+                _usrCache = await r.json();
+            } catch { _usrCache = []; }
+            window._usrPag = 1;
+            renderTablaUsuarios();
+        }
+
         function renderTablaUsuarios() {
-            const usuarios = _getUsuarios();
+            const todos = _usrCache.filter(u => !u.externo);
             const pp    = parseInt(document.getElementById('usr-pp').value) || 5;
             const query = (document.getElementById('usr-buscar').value || '').toLowerCase();
             const filtrados = query
-                ? usuarios.filter(u => u.nombre.toLowerCase().includes(query) || u.email.toLowerCase().includes(query))
-                : [...usuarios];
+                ? todos.filter(u => u.nombre.toLowerCase().includes(query) || u.email.toLowerCase().includes(query))
+                : [...todos];
             const total = filtrados.length;
             const pag   = window._usrPag || 1;
             const desde = (pag - 1) * pp;
             const hasta = Math.min(desde + pp, total);
-            const pagina = filtrados.slice(desde, hasta);
 
-            if (pagina.length === 0) {
+            if (total === 0) {
                 document.getElementById('tbody-usuarios').innerHTML =
                     `<tr><td colspan="4" style="text-align:center;padding:32px;color:#94a3b8;">No hay usuarios registrados.</td></tr>`;
             } else {
-                document.getElementById('tbody-usuarios').innerHTML = pagina.map((u, ri) => {
-                    const idx = usuarios.indexOf(u);
+                document.getElementById('tbody-usuarios').innerHTML = filtrados.slice(desde, hasta).map(u => {
                     const esAdmin = u.tipo === 'Administrador';
                     const btnTipo = esAdmin
-                        ? `<button class="btn-hacer-normal" onclick="cambiarTipoUsuario(${idx},'Usuario Normal')">Hacer Usuario Normal</button>`
-                        : `<button class="btn-hacer-admin" onclick="cambiarTipoUsuario(${idx},'Administrador')">Hacer Administrador</button>`;
-                    const btnElim = `<button class="btn-eliminar-usr" onclick="eliminarUsuario(${idx})">Eliminar Usuario</button>`;
-                    // Admin principal no muestra botones de acción (como en el original)
-                    const acciones = u.principal ? '' : `${btnTipo} ${btnElim}`;
+                        ? `<button class="btn-hacer-normal" onclick="cambiarTipoUsuario(${u.id},'Usuario Normal')">Hacer Usuario Normal</button>`
+                        : `<button class="btn-hacer-admin" onclick="cambiarTipoUsuario(${u.id},'Administrador')">Hacer Administrador</button>`;
+                    const btnElim = `<button class="btn-eliminar-usr" onclick="eliminarUsuario(${u.id},'${u.nombre.replace(/'/g,"'")}')" >Eliminar Usuario</button>`;
                     return `<tr>
                         <td style="color:#337ab7;">${u.email}</td>
                         <td>${u.nombre}</td>
                         <td>${u.tipo}</td>
-                        <td style="white-space:nowrap;">${acciones}</td>
+                        <td style="white-space:nowrap;">${btnTipo} ${btnElim}</td>
                     </tr>`;
                 }).join('');
             }
-
-            // Info registros
             document.getElementById('usr-info-registros').textContent = total === 0
                 ? 'Sin resultados'
-                : `Mostrando desde ${desde + 1} hasta ${Math.max(hasta, 1)} de ${total} registros`;
-
-            // Paginación
+                : `Mostrando desde ${desde+1} hasta ${Math.max(hasta,1)} de ${total} registros`;
             const npags = Math.max(1, Math.ceil(total / pp));
             let pagHtml = `<button onclick="_usrIrPag(${pag-1})" ${pag<=1?'disabled':''} style="padding:3px 9px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;cursor:pointer;">Anterior</button>`;
-            for (let p = 1; p <= npags; p++) {
+            for (let p = 1; p <= npags; p++)
                 pagHtml += `<button onclick="_usrIrPag(${p})" style="padding:3px 9px;border:1px solid ${p===pag?'#337ab7':'#cbd5e1'};border-radius:4px;background:${p===pag?'#337ab7':'#fff'};color:${p===pag?'#fff':'#1e293b'};cursor:pointer;font-weight:${p===pag?700:400};">${p}</button>`;
-            }
             pagHtml += `<button onclick="_usrIrPag(${pag+1})" ${pag>=npags?'disabled':''} style="padding:3px 9px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;cursor:pointer;">Siguiente</button>`;
             document.getElementById('usr-paginacion').innerHTML = pagHtml;
         }
 
         function _usrIrPag(p) {
             const pp = parseInt(document.getElementById('usr-pp').value) || 5;
-            const total = _getUsuarios().length;
+            const total = _usrCache.filter(u => !u.externo).length;
             const npags = Math.max(1, Math.ceil(total / pp));
             window._usrPag = Math.min(Math.max(1, p), npags);
             renderTablaUsuarios();
         }
 
-        function cambiarTipoUsuario(idx, nuevoTipo) {
-            const arr = _getUsuarios();
-            if (!arr[idx]) return;
-            arr[idx].tipo = nuevoTipo;
-            _saveUsuarios(arr);
-            _agregarHistorial(`Tipo de usuario cambiado: "${arr[idx].nombre}" → ${nuevoTipo}`);
-            renderTablaUsuarios();
+        async function cambiarTipoUsuario(id, nuevoTipo) {
+            const u = _usrCache.find(x => x.id === id);
+            if (!u) return;
+            await fetch(`${API}/usuarios/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({tipo: nuevoTipo}) });
+            await _agregarHistorial(`Tipo de usuario cambiado: "${u.nombre}" → ${nuevoTipo}`);
             toast(`Usuario actualizado a ${nuevoTipo}`, 'success');
+            cargarYRenderUsuarios();
         }
 
-        function eliminarUsuario(idx) {
-            const arr = _getUsuarios();
-            if (!arr[idx]) return;
-            const nombre = arr[idx].nombre;
-            arr.splice(idx, 1);
-            _saveUsuarios(arr);
-            _agregarHistorial(`Usuario eliminado: "${nombre}"`);
-            renderTablaUsuarios();
+        async function eliminarUsuario(id, nombre) {
+            await fetch(`${API}/usuarios/${id}`, { method:'DELETE' });
+            await _agregarHistorial(`Usuario eliminado: "${nombre}"`);
             toast('Usuario eliminado', 'success');
+            cargarYRenderUsuarios();
         }
 
-        function crearUsuarioNuevo() {
+        async function crearUsuarioNuevo() {
             const nombre   = document.getElementById('cru-nombre').value.trim();
             const apellido = document.getElementById('cru-apellido').value.trim();
             const rut      = document.getElementById('cru-rut').value.trim();
             const email    = document.getElementById('cru-email').value.trim();
-            if (!nombre || !email) { toast('Nombre y email son requeridos', 'error'); return; }
-            if (rut && !/^[0-9]+-[0-9kK]$/.test(rut)) { toast('RUT inválido. Use formato: 12345678-9', 'error'); return; }
-            const arr = _getUsuarios();
-            if (arr.some(u => u.email === email)) { toast('Ya existe un usuario con ese email', 'error'); return; }
+            const clave    = document.getElementById('cru-clave').value.trim();
+            if (!nombre) { toast('El nombre es requerido', 'error'); return; }
+            if (!rut || !/^[0-9]+-[0-9kK]$/.test(rut)) { toast('RUT inválido. Use formato: 12345678-9', 'error'); return; }
+            if (!clave || clave.length < 4) { toast('La contraseña debe tener al menos 4 caracteres', 'error'); return; }
             const nombreCompleto = apellido ? `${nombre} ${apellido}` : nombre;
-            arr.push({ nombre: nombreCompleto, email, rut, tipo: 'Usuario Normal', externo: false });
-            _saveUsuarios(arr);
-            _agregarHistorial(`Nuevo usuario creado: "${nombreCompleto}"`);
-            ['cru-nombre','cru-apellido','cru-rut','cru-email'].forEach(id => document.getElementById(id).value = '');
-            toast(`Usuario "${nombreCompleto}" creado correctamente`, 'success');
+            const r = await fetch(`${API}/usuarios`, { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ nombre: nombreCompleto, email, rut, clave, tipo:'Usuario Normal' }) });
+            const data = await r.json();
+            if (!r.ok) { toast(data.error || 'Error al crear usuario', 'error'); return; }
+            await _agregarHistorial(`Nuevo usuario creado: "${nombreCompleto}" (${rut})`);
+            ['cru-nombre','cru-apellido','cru-rut','cru-email','cru-clave'].forEach(id => document.getElementById(id).value = '');
+            toast(`Usuario "${nombreCompleto}" creado — ya puede ingresar con su RUT y contraseña`, 'success');
             usuariosIrA('administrar');
         }
 
-        function crearUsuarioExterno() {
+        async function crearUsuarioExterno() {
             const nombre  = document.getElementById('cre-nombre').value.trim();
             const email   = document.getElementById('cre-email').value.trim();
             const empresa = document.getElementById('cre-empresa').value.trim();
             if (!nombre || !email) { toast('Nombre y email son requeridos', 'error'); return; }
-            const arr = _getUsuarios();
-            arr.push({ nombre, email, tipo: 'Usuario Externo', empresa, externo: true });
-            _saveUsuarios(arr);
-            _agregarHistorial(`Nuevo usuario externo creado: "${nombre}" (${empresa})`);
-            document.getElementById('cre-nombre').value   = '';
-            document.getElementById('cre-email').value    = '';
-            document.getElementById('cre-empresa').value  = '';
+            const r = await fetch(`${API}/usuarios`, { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ nombre, email, empresa, tipo:'Usuario Externo', externo: true }) });
+            const data = await r.json();
+            if (!r.ok) { toast(data.error || 'Error al crear usuario externo', 'error'); return; }
+            await _agregarHistorial(`Nuevo usuario externo creado: "${nombre}" (${empresa})`);
+            ['cre-nombre','cre-email','cre-empresa'].forEach(id => document.getElementById(id).value = '');
             toast(`Usuario externo "${nombre}" creado`, 'success');
             usuariosIrA('externos');
         }
 
-        function renderHistorialUsuarios() {
-            const hist  = JSON.parse(localStorage.getItem('sia_usr_historial') || '[]').slice().reverse();
+        async function cargarYRenderExternos() {
+            try {
+                const r = await fetch(`${API}/usuarios`);
+                const todos = await r.json();
+                const externos = todos.filter(u => u.externo);
+                const el = document.getElementById('tbody-externos-wrap');
+                if (externos.length === 0) {
+                    el.innerHTML = '<p style="text-align:center;color:#94a3b8;padding:40px 0;">No hay usuarios externos registrados.</p>';
+                } else {
+                    el.innerHTML = `<div style="overflow-x:auto;"><table class="tbl-usuarios"><thead><tr><th>Nombre</th><th>Email</th><th>Empresa</th><th>Acción</th></tr></thead><tbody>
+                        ${externos.map(u => `<tr><td>${u.nombre}</td><td style="color:#337ab7;">${u.email}</td><td>${u.empresa||''}</td>
+                        <td><button class="btn-eliminar-usr" onclick="eliminarUsuario(${u.id},'${u.nombre}')">Eliminar</button></td></tr>`).join('')}
+                    </tbody></table></div>`;
+                }
+            } catch { document.getElementById('tbody-externos-wrap').innerHTML = '<p style="text-align:center;color:#e11d48;">Error al conectar con el servidor.</p>'; }
+        }
+
+        let _histCache = [];
+
+        async function renderHistorialUsuarios() {
+            try {
+                const r = await fetch(`${API}/historial-usuarios`);
+                _histCache = await r.json();
+            } catch { _histCache = []; }
+            _renderHistTabla();
+        }
+
+        function _renderHistTabla() {
             const pp    = parseInt(document.getElementById('hist-pp')?.value) || 5;
             const query = (document.getElementById('hist-buscar')?.value || '').toLowerCase();
             const filtrados = query
-                ? hist.filter(h => h.accion.toLowerCase().includes(query) || (h.admin||'').toLowerCase().includes(query))
-                : [...hist];
+                ? _histCache.filter(h => h.accion.toLowerCase().includes(query) || (h.admin||'').toLowerCase().includes(query))
+                : [..._histCache];
             const total = filtrados.length;
             const pag   = window._histPag || 1;
             const desde = (pag - 1) * pp;
             const hasta = Math.min(desde + pp, total);
-            // Saludo
             const saludo = document.getElementById('hist-saludo');
-            if (saludo) saludo.textContent = `Hola, los cambios más recientes son:`;
-            if (total === 0) {
-                document.getElementById('tbody-historial').innerHTML =
-                    `<tr><td colspan="3" style="text-align:center;padding:32px;color:#94a3b8;">No hay modificaciones registradas.</td></tr>`;
-            } else {
-                document.getElementById('tbody-historial').innerHTML = filtrados.slice(desde, hasta).map(h => `
-                    <tr>
-                        <td style="color:#475569;white-space:nowrap;font-size:0.8rem;">${h.fecha}</td>
-                        <td style="color:#337ab7;font-weight:600;">${h.admin || 'Sistema'}</td>
-                        <td style="color:#337ab7;">${h.accion}</td>
-                    </tr>`).join('');
-            }
+            if (saludo) saludo.textContent = total > 0 ? `Los cambios más recientes son:` : '';
+            document.getElementById('tbody-historial').innerHTML = total === 0
+                ? `<tr><td colspan="3" style="text-align:center;padding:32px;color:#94a3b8;">No hay modificaciones registradas.</td></tr>`
+                : filtrados.slice(desde, hasta).map(h => `<tr>
+                    <td style="color:#475569;white-space:nowrap;font-size:0.8rem;">${h.fecha}</td>
+                    <td style="color:#337ab7;font-weight:600;">${h.admin || 'Sistema'}</td>
+                    <td style="color:#337ab7;">${h.accion}</td>
+                  </tr>`).join('');
             const infoEl = document.getElementById('hist-info');
             if (infoEl) infoEl.textContent = total === 0 ? '' : `Mostrando desde ${desde+1} hasta ${Math.max(hasta,1)} de ${total} registros`;
             const npags = Math.max(1, Math.ceil(total / pp));
@@ -3699,37 +3883,189 @@
             const pagEl = document.getElementById('hist-paginacion');
             if (pagEl) pagEl.innerHTML = pagHtml;
         }
+
         function _histIrPag(p) {
             const pp = parseInt(document.getElementById('hist-pp')?.value) || 5;
-            const total = JSON.parse(localStorage.getItem('sia_usr_historial') || '[]').length;
-            const npags = Math.max(1, Math.ceil(total / pp));
+            const npags = Math.max(1, Math.ceil(_histCache.length / pp));
             window._histPag = Math.min(Math.max(1, p), npags);
-            renderHistorialUsuarios();
+            _renderHistTabla();
         }
+
         function histCopiar() {
-            const hist = JSON.parse(localStorage.getItem('sia_usr_historial') || '[]').slice().reverse();
-            const texto = hist.map(h => `${h.fecha}\t${h.admin || 'Sistema'}\t${h.accion}`).join('\n');
+            const texto = _histCache.map(h => `${h.fecha}\t${h.admin||'Sistema'}\t${h.accion}`).join('\n');
             navigator.clipboard?.writeText(texto).then(() => toast('Copiado al portapapeles', 'success'));
         }
         function histExportCSV() {
-            const hist = JSON.parse(localStorage.getItem('sia_usr_historial') || '[]').slice().reverse();
-            const csv  = 'Fecha,Administrador,Acción\n' + hist.map(h => `"${h.fecha}","${h.admin||'Sistema'}","${h.accion}"`).join('\n');
-            const a = document.createElement('a');
-            a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            const csv = 'Fecha,Administrador,Acción\n' + _histCache.map(h => `"${h.fecha}","${h.admin||'Sistema'}","${h.accion}"`).join('\n');
+            const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
             a.download = 'historial_cambios.csv'; a.click();
         }
         function histExportExcel() {
             if (typeof XLSX === 'undefined') { toast('SheetJS no disponible','error'); return; }
-            const hist = JSON.parse(localStorage.getItem('sia_usr_historial') || '[]').slice().reverse();
-            const wsData = [['Fecha','Administrador','Acción'], ...hist.map(h => [h.fecha, h.admin||'Sistema', h.accion])];
+            const wsData = [['Fecha','Administrador','Acción'], ..._histCache.map(h => [h.fecha, h.admin||'Sistema', h.accion])];
             _generarExcel('Historial_cambios', 'Historial', wsData, [{wch:20},{wch:22},{wch:60}]);
         }
 
-        function _agregarHistorial(accion) {
-            const hist = JSON.parse(localStorage.getItem('sia_usr_historial') || '[]');
-            hist.push({ fecha: new Date().toLocaleString('es-CL'), accion });
-            localStorage.setItem('sia_usr_historial', JSON.stringify(hist));
+        async function _agregarHistorial(accion) {
+            await fetch(`${API}/historial-usuarios`, {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ accion, admin: 'Sistema' })
+            });
         }
+
+        // ===================== BOT SII =====================
+        let _botPollingInterval = null;
+        let _botEstabaCorreindo = false;
+        let _botUltimoLog = '';
+
+        function _botActualizarUI(e) {
+            if (!e) return;
+            // Badge estado
+            const badge = document.getElementById('bot-badge');
+            if (badge) {
+                if (e.corriendo) {
+                    badge.className = 'bot-estado-badge corriendo';
+                    badge.textContent = '● Corriendo...';
+                } else if (e.ultimo_error) {
+                    badge.className = 'bot-estado-badge error';
+                    badge.textContent = '● Último con errores';
+                } else {
+                    badge.className = 'bot-estado-badge detenido';
+                    badge.textContent = '● Detenido';
+                }
+            }
+            // Contadores
+            const tot = e.total || 0, ok = e.ok || 0, fa = e.fallos || 0;
+            const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+            set('bot-total', tot); set('bot-ok', ok); set('bot-fallos', fa);
+            set('bot-actual', e.actual || '—');
+            set('bot-pct', tot > 0 ? Math.round((ok/tot)*100) + '%' : '—');
+            if (e.duracion_seg) set('bot-duracion', e.duracion_seg + 's');
+            // Barra
+            const pct = tot > 0 ? Math.min(100, Math.round(((ok+fa)/tot)*100)) : (e.corriendo ? 5 : 0);
+            const barra = document.getElementById('bot-barra');
+            if (barra) barra.style.width = pct + '%';
+            // Botón
+            const btn = document.getElementById('btn-bot-iniciar');
+            if (btn) { btn.disabled = e.corriendo; btn.textContent = e.corriendo ? '⏳ Corriendo...' : '▶ Ejecutar Ahora'; }
+            // Fallos lista
+            const fc = document.getElementById('bot-fallos-card');
+            const fl = document.getElementById('bot-fallos-lista');
+            if (fc && fl && e.fallos_lista && e.fallos_lista.length > 0) {
+                fc.style.display = '';
+                fl.innerHTML = e.fallos_lista.map(f =>
+                    `<div style="padding:4px 0;border-bottom:1px solid #fee2e2;color:#dc2626;">
+                        ● Fallo aceptar compras rut: <strong>${f[0]}</strong> de empresa: <strong>${f[1]}</strong>
+                    </div>`).join('');
+            } else if (fc) { fc.style.display = 'none'; }
+            // Alerta si hubo error nuevo
+            if (!_botEstabaCorreindo && e.corriendo) {
+                _botEstabaCorreindo = true;
+                _botMostrarAlerta('Bot SII iniciado — procesando ' + tot + ' clientes', 'ok');
+            }
+            if (_botEstabaCorreindo && !e.corriendo) {
+                _botEstabaCorreindo = false;
+                if (e.fallos > 0)
+                    _botMostrarAlerta(`Ciclo completado — OK: ${ok}  Fallos: ${fa}  Tiempo: ${e.duracion_seg||0}s`, 'warn');
+                else
+                    _botMostrarAlerta(`Ciclo completado exitosamente — ${ok} clientes procesados`, 'ok');
+                botCargarLogs();
+            }
+        }
+
+        function _botMostrarAlerta(msg, tipo) {
+            const c = document.getElementById('bot-alertas');
+            if (!c) return;
+            const d = document.createElement('div');
+            d.className = 'bot-alerta ' + tipo;
+            d.innerHTML = `<span>${tipo==='ok'?'✅':tipo==='warn'?'⚠️':'❌'}</span><span>${msg}</span>
+                <button onclick="this.parentElement.remove()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:inherit;">✕</button>`;
+            c.prepend(d);
+            setTimeout(() => d.remove && d.remove(), 12000);
+        }
+
+        async function botRefrescar() {
+            try {
+                const r = await fetch(`${API}/bot/estado`);
+                const e = await r.json();
+                _botActualizarUI(e);
+                // Log en vivo si está corriendo
+                const liveCard = document.getElementById('bot-log-live-card');
+                const liveBox  = document.getElementById('bot-log-live');
+                if (e.corriendo && liveCard && liveBox) {
+                    liveCard.style.display = '';
+                    // Cargar el log más reciente
+                    const logs = await (await fetch(`${API}/bot/logs`)).json();
+                    if (logs.length > 0 && logs[0] !== _botUltimoLog) {
+                        _botUltimoLog = logs[0];
+                        const txt = await (await fetch(`${API}/bot/logs/${logs[0]}`)).text();
+                        liveBox.textContent = txt;
+                        liveBox.scrollTop = liveBox.scrollHeight;
+                    }
+                }
+            } catch {
+                _botMostrarAlerta('No se puede conectar con el servidor — verifique que esté corriendo', 'error');
+            }
+        }
+
+        async function botCargarLogs() {
+            const el = document.getElementById('bot-logs-lista');
+            if (!el) return;
+            try {
+                const r = await fetch(`${API}/bot/logs`);
+                const logs = await r.json();
+                if (logs.length === 0) {
+                    el.innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;">Aún no hay logs generados.</p>';
+                    return;
+                }
+                el.innerHTML = logs.map(f => `
+                    <div class="bot-log-item" onclick="botVerLog('${f}')">
+                        <span>📄 ${f}</span>
+                        <span style="font-size:0.75rem;color:#94a3b8;">Ver →</span>
+                    </div>`).join('');
+            } catch { el.innerHTML = '<p style="color:#e11d48;font-size:0.85rem;">Error al cargar logs.</p>'; }
+        }
+
+        async function botVerLog(filename) {
+            const viewer  = document.getElementById('bot-log-viewer');
+            const nombre  = document.getElementById('bot-log-viewer-nombre');
+            const content = document.getElementById('bot-log-viewer-content');
+            if (!viewer || !content) return;
+            nombre.textContent = filename;
+            content.textContent = 'Cargando...';
+            viewer.style.display = '';
+            try {
+                const txt = await (await fetch(`${API}/bot/logs/${filename}`)).text();
+                content.textContent = txt;
+            } catch { content.textContent = 'Error al cargar el archivo.'; }
+        }
+
+        async function botIniciarAhora() {
+            const btn = document.getElementById('btn-bot-iniciar');
+            if (btn) { btn.disabled = true; btn.textContent = '⏳ Iniciando...'; }
+            try {
+                const r = await fetch(`${API}/bot/iniciar`, { method:'POST' });
+                const d = await r.json();
+                if (!r.ok) { _botMostrarAlerta(d.error || 'Error al iniciar bot', 'error'); if(btn){btn.disabled=false;btn.textContent='▶ Ejecutar Ahora';} return; }
+                _botMostrarAlerta('Bot SII iniciado correctamente', 'ok');
+                _botEstabaCorreindo = false;
+                setTimeout(botRefrescar, 1500);
+            } catch { _botMostrarAlerta('No se puede conectar con el servidor', 'error'); if(btn){btn.disabled=false;btn.textContent='▶ Ejecutar Ahora';} }
+        }
+
+        // Arrancar polling cuando se entra al panel
+        const _origShowSection = showSection;
+        showSection = function(sec) {
+            _origShowSection(sec);
+            if (sec === 'bot') {
+                botRefrescar();
+                botCargarLogs();
+                if (!_botPollingInterval)
+                    _botPollingInterval = setInterval(botRefrescar, 5000);
+            } else {
+                if (_botPollingInterval) { clearInterval(_botPollingInterval); _botPollingInterval = null; }
+            }
+        };
 
         // ===================== INIT =====================
         cargarClientes();
