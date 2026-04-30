@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA EXTERNALIZAR - Panel Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --azul-deep: #0f172a;
+            --azul-brillante: #1a4fdb;
+            --celeste-soft: #38bdf8;
+            --fondo: #f1f5f9;
+            --azul-botones: #337ab7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--fondo);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex; height: 100vh; width: 100vw; overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px; background: #1e293b; color: white;
+            display: flex; flex-direction: column; flex-shrink: 0; height: 100%;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 25px; font-weight: 900; font-size: 1.1rem; color: var(--celeste-soft);
+            text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase;
+        }
+
+        .nav-links { padding: 15px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+
+        .nav-links a {
+            color: #94a3b8; text-decoration: none; padding: 10px 15px;
+            font-size: 0.85rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active { background: rgba(56, 189, 248, 0.1); color: white; }
+        .nav-links a.active { background: var(--azul-brillante); }
+
+        .main-container { flex-grow: 1; height: 100%; overflow-y: auto; position: relative; padding: 40px; }
+
+        .user-top-card {
+            position: absolute; top: 25px; right: 40px; background: white;
+            padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; z-index: 100;
+        }
+
+        .user-avatar {
+            width: 35px; height: 35px; background: var(--azul-brillante);
+            color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+
+        .section-view { display: none; animation: fadeIn 0.3s ease; margin-top: 50px; }
+        .section-view.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .content-card {
+            background: white; border-radius: 15px; padding: 25px; border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); max-height: 72vh; overflow-y: auto;
+        }
+
+        .grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .card-btn {
+            background: white; padding: 35px 15px; border-radius: 20px;
+            text-align: center; cursor: pointer; border: 1px solid #f1f5f9;
+            transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            font-weight: 700; color: #334155; font-size: 0.95rem;
+        }
+        .card-btn:hover { transform: translateY(-5px); border-color: var(--azul-brillante); color: var(--azul-brillante); }
+        .card-btn span { font-size: 2.2rem; display: block; margin-bottom: 12px; }
+
+        .btn-sia { background-color: var(--azul-botones) !important; border: none; color: white; font-size: 11px; padding: 6px 12px; font-weight: 600; border-radius: 4px; }
+
+        /* Dashboard cards */
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card {
+            background: white; border-radius: 14px; padding: 20px 18px;
+            border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .stat-card .label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+        .stat-card .value { font-size: 1.8rem; font-weight: 900; color: var(--azul-brillante); }
+        .stat-card .sub { font-size: 0.75rem; color: #94a3b8; margin-top: 4px; }
+
+        /* Badge estados */
+        .badge-ok { background: #dcfce7; color: #16a34a; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-pend { background: #fef9c3; color: #b45309; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-err { background: #fee2e2; color: #dc2626; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: white; border-radius: 20px; padding: 35px; width: 90%; max-width: 520px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: fadeIn 0.2s;
+        }
+        .modal-box h4 { font-weight: 800; margin-bottom: 20px; color: #0f172a; }
+        .modal-box label { font-size: 0.82rem; font-weight: 700; color: #475569; }
+        .modal-box input, .modal-box select {
+            width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0;
+            border-radius: 8px; font-size: 0.9rem; margin-bottom: 14px; outline: none;
+        }
+        .modal-box input:focus, .modal-box select:focus { border-color: var(--azul-brillante); }
+
+        /* Usuarios */
+        .user-card {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+            padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 10px;
+        }
+        .user-card .avatar {
+            width: 42px; height: 42px; border-radius: 10px; background: var(--azul-brillante);
+            color: white; font-weight: 900; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+        }
+        .user-card .info .name { font-weight: 700; font-size: 0.9rem; }
+        .user-card .info .role { font-size: 0.75rem; color: #64748b; }
+        .user-card .actions { margin-left: auto; display: flex; gap: 8px; }
+
+        /* Tabla match */
+        .match-pill {
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: 700;
+        }
+        .match-ok { background: #dcfce7; color: #16a34a; }
+        .match-no { background: #fee2e2; color: #dc2626; }
+
+        /* Buscador */
+        .search-bar {
+            width: 100%; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 10px;
+            font-size: 0.9rem; margin-bottom: 16px; outline: none;
+        }
+        .search-bar:focus { border-color: var(--azul-brillante); }
+
+        /* Descargas */
+        .download-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 18px; border: 1px solid #e2e8f0; border-radius: 12px;
+            margin-bottom: 10px; background: #f8fafc; transition: 0.2s;
+        }
+        .download-item:hover { border-color: var(--azul-brillante); background: white; }
+        .download-item .file-info { display: flex; align-items: center; gap: 12px; }
+        .download-item .file-icon { font-size: 1.6rem; }
+        .download-item .file-name { font-weight: 700; font-size: 0.88rem; }
+        .download-item .file-date { font-size: 0.75rem; color: #94a3b8; }
+
+        /* Facturador */
+        .fact-card {
+            background: white; border: 1px solid #e2e8f0; border-radius: 14px;
+            padding: 24px; margin-bottom: 16px;
+        }
+        .fact-card h5 { font-weight: 800; margin-bottom: 16px; color: #1e293b; }
+        .fact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .fact-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .form-label-sia { font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 4px; }
+        .input-sia {
+            width: 100%; padding: 9px 13px; border: 1px solid #e2e8f0;
+            border-radius: 8px; font-size: 0.88rem; outline: none;
+        }
+        .input-sia:focus { border-color: var(--azul-brillante); }
+
+        /* Spinner */
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Alertas toast */
+        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast-msg {
+            background: #1e293b; color: white; padding: 14px 22px; border-radius: 12px;
+            font-size: 0.88rem; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s ease;
+        }
+        .toast-msg.success { border-left: 4px solid #22c55e; }
+        .toast-msg.error { border-left: 4px solid #ef4444; }
+        .toast-msg.info { border-left: 4px solid #38bdf8; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">SIA EXTERNALIZAR</div>
+        <nav class="nav-links">
+            <a onclick="showSection('inicio')" id="nav-inicio" class="active">🏠 Inicio</a>
+            <a onclick="showSection('dashboard')" id="nav-dashboard">📊 Dashboard</a>
+            <a onclick="showSection('registro')" id="nav-registro">👥 Registro Clientes</a>
+            <a onclick="showSection('carga')" id="nav-carga">📝 Carga Información</a>
+            <a onclick="showSection('match')" id="nav-match">⚖️ Match Contable</a>
+            <a onclick="showSection('descargas')" id="nav-descargas">📥 Descargas</a>
+            <a onclick="showSection('facturador')" id="nav-facturador">🚀 Facturador Masivo</a>
+            <a onclick="showSection('usuarios')" id="nav-usuarios">👤 Usuarios</a>
+            <a onclick="cerrarSesion()" style="color: #f87171 !important; margin-top: 20px;">❌ Salir</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-container">
+
+        <div class="user-top-card">
+            <div class="user-avatar" id="uInitial">?</div>
+            <div id="uName" style="font-size: 14px; font-weight: 800;">Cargando...</div>
+        </div>
+
+        <!-- ===== INICIO ===== -->
+        <div id="view-inicio" class="section-view active">
+            <h1 style="font-weight: 800; margin-bottom: 30px;">Panel Principal</h1>
+            <div class="grid-menu">
+                <div class="card-btn" onclick="showSection('dashboard')"><span>📊</span> Dashboard</div>
+                <div class="card-btn" onclick="showSection('registro')"><span>👥</span> Registro Clientes</div>
+                <div class="card-btn" onclick="showSection('carga')"><span>📝</span> Detalle Servicios y Carga Información</div>
+                <div class="card-btn" onclick="showSection('match')"><span>⚖️</span> Match Contable</div>
+                <div class="card-btn" onclick="showSection('descargas')"><span>📥</span> Descarga Libros</div>
+                <div class="card-btn" onclick="showSection('facturador')"><span>🚀</span> Facturador Masivo</div>
+                <div class="card-btn" style="grid-column: span 3; max-width: 300px; margin: auto;" onclick="showSection('usuarios')"><span>👤</span> Usuarios</div>
+            </div>
+        </div>
+
+        <!-- ===== DASHBOARD ===== -->
+        <div id="view-dashboard" class="section-view">
+            <h2 style="font-weight: 800; margin-bottom: 24px;">📊 Dashboard</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="label">Total Clientes</div>
+                    <div class="value" id="dash-total">—</div>
+                    <div class="sub">Registrados en el sistema</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Con Servicio SII</div>
+                    <div class="value" id="dash-sii" style="color:#16a34a;">—</div>
+                    <div class="sub">Descarga automática activa</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Con Banco</div>
+                    <div class="value" id="dash-bco" style="color:#0284c7;">—</div>
+                    <div class="sub">BCI / Santander conectado</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Pendientes</div>
+                    <div class="value" id="dash-pend" style="color:#dc2626;">—</div>
+                    <div class="sub">Sin servicio configurado</div>
+                </div>
+            </div>
+            <div class="content-card">
+                <h5 style="font-weight:800; margin-bottom:16px;">Resumen de Clientes</h5>
+                <table class="table table-bordered align-middle text-center" id="tabla-dashboard">
+                    <thead class="table-light">
+                        <tr><th>Empresa</th><th>RUT</th><th>SII</th><th>Banco</th><th>Estado</th></tr>
+                    </thead>
+                    <tbody id="body-dashboard"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== REGISTRO ===== -->
+        <div id="view-registro" class="section-view">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 style="font-weight: 800;">👥 Registro Clientes</h2>
+                <button class="btn btn-sia px-4 py-2" style="font-size:13px;" onclick="abrirModalCliente()">+ Nuevo Cliente</button>
+            </div>
+            <input type="text" class="search-bar" placeholder="🔍 Buscar por nombre o RUT..." oninput="filtrarTabla('body-registro', this.value)">
+            <div class="content-card">
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-light">
+                        <tr><th>Empresa</th><th>RUT Cliente</th><th>Servicios</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody id="body-registro"></tbody>
+                </table>
+                <div class="d-flex flex-column align-items-center gap-2 mt-4">
+                    <button class="btn btn-sia px-4 py-2" style="font-size: 13px;">Carga Masiva Remuneraciones</button>
+                    <button class="btn btn-sia px-4 py-2" style="font-size: 13px;">Cierre Masivo de Impuestos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CARGA ===== -->
+        <div id="view-carga" class="section-view">
+            <h2 class="mb-3" style="font-weight: 800;">📝 Carga Información</h2>
+            <input type="text" class="search-bar" placeholder="🔍 Filtrar por RUT o empresa..." oninput="filtrarTabla('body-carga', this.value)">
+            <div class="content-card">
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-light">
+                        <tr><th>Empresa</th><th>RUT Cliente</th><th>Mes/Año</th><th>Estado</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody id="body-carga"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== MATCH ===== -->
+        <div id="view-match" class="section-view">
+            <h2 class="mb-3" style="font-weight: 800;">⚖️ Match Contable</h2>
+            <div class="content-card">
+                <div class="d-flex gap-3 mb-4 flex-wrap">
+                    <div>
+                        <label class="form-label-sia">Empresa / RUT</label>
+                        <input type="text" class="input-sia" id="match-rut" placeholder="Ej: 76123456-7" style="width:200px;">
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Mes</label>
+                        <select class="input-sia" id="match-mes" style="width:140px;">
+                            <option value="">-- Mes --</option>
+                            <option>Enero</option><option>Febrero</option><option>Marzo</option>
+                            <option>Abril</option><option>Mayo</option><option>Junio</option>
+                            <option>Julio</option><option>Agosto</option><option>Septiembre</option>
+                            <option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Año</label>
+                        <input type="number" class="input-sia" id="match-ano" placeholder="2025" style="width:100px;" value="2025">
+                    </div>
+                    <div style="align-self:flex-end;">
+                        <button class="btn btn-sia px-4 py-2" onclick="ejecutarMatch()">Ejecutar Match</button>
+                    </div>
+                </div>
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-light">
+                        <tr><th>Empresa</th><th>RUT</th><th>Período</th><th>Facturas SII</th><th>Movimientos Banco</th><th>Match</th><th>Diferencia</th></tr>
+                    </thead>
+                    <tbody id="body-match">
+                        <tr><td colspan="7" class="text-muted py-4">Ingresa los filtros y ejecuta el match</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== DESCARGAS ===== -->
+        <div id="view-descargas" class="section-view">
+            <h2 class="mb-3" style="font-weight: 800;">📥 Descargas</h2>
+            <div class="content-card">
+                <div class="d-flex gap-3 mb-4 flex-wrap align-items-end">
+                    <div>
+                        <label class="form-label-sia">Empresa / RUT</label>
+                        <input type="text" class="input-sia" id="desc-rut" placeholder="Ej: 76123456-7" style="width:200px;">
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Mes</label>
+                        <select class="input-sia" id="desc-mes" style="width:140px;">
+                            <option value="">-- Mes --</option>
+                            <option>Enero</option><option>Febrero</option><option>Marzo</option>
+                            <option>Abril</option><option>Mayo</option><option>Junio</option>
+                            <option>Julio</option><option>Agosto</option><option>Septiembre</option>
+                            <option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Año</label>
+                        <input type="number" class="input-sia" id="desc-ano" placeholder="2025" style="width:100px;" value="2025">
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Tipo</label>
+                        <select class="input-sia" id="desc-tipo" style="width:180px;">
+                            <option value="todos">Todos los documentos</option>
+                            <option value="rcv">RCV Compras/Ventas</option>
+                            <option value="bher">Boletas Honorarios</option>
+                            <option value="libro">Libro Diario</option>
+                            <option value="bco">Cartola Bancaria</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button class="btn btn-sia px-4 py-2" onclick="generarDescarga()">Generar Descarga</button>
+                    </div>
+                </div>
+                <div id="lista-descargas">
+                    <p class="text-muted text-center py-4">Selecciona filtros y genera la descarga</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FACTURADOR ===== -->
+        <div id="view-facturador" class="section-view">
+            <h2 class="mb-3" style="font-weight: 800;">🚀 Facturador Masivo</h2>
+            <div class="fact-card">
+                <h5>Datos del Emisor</h5>
+                <div class="fact-row">
+                    <div>
+                        <label class="form-label-sia">RUT Empresa</label>
+                        <input type="text" class="input-sia" id="fact-rut-emisor" placeholder="Ej: 76123456-7">
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Razón Social</label>
+                        <input type="text" class="input-sia" id="fact-razon-emisor" placeholder="Empresa S.A.">
+                    </div>
+                </div>
+            </div>
+            <div class="fact-card">
+                <h5>Datos del Documento</h5>
+                <div class="fact-row-3">
+                    <div>
+                        <label class="form-label-sia">Tipo Documento</label>
+                        <select class="input-sia" id="fact-tipo">
+                            <option value="33">Factura Electrónica (33)</option>
+                            <option value="39">Boleta Electrónica (39)</option>
+                            <option value="61">Nota de Crédito (61)</option>
+                            <option value="56">Nota de Débito (56)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Fecha Emisión</label>
+                        <input type="date" class="input-sia" id="fact-fecha">
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Folio</label>
+                        <input type="number" class="input-sia" id="fact-folio" placeholder="1001">
+                    </div>
+                </div>
+            </div>
+            <div class="fact-card">
+                <h5>Receptor</h5>
+                <div class="fact-row">
+                    <div>
+                        <label class="form-label-sia">RUT Receptor</label>
+                        <input type="text" class="input-sia" id="fact-rut-receptor" placeholder="Ej: 12345678-9">
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Razón Social Receptor</label>
+                        <input type="text" class="input-sia" id="fact-razon-receptor" placeholder="Cliente S.A.">
+                    </div>
+                </div>
+            </div>
+            <div class="fact-card">
+                <h5>Montos</h5>
+                <div class="fact-row-3">
+                    <div>
+                        <label class="form-label-sia">Monto Neto</label>
+                        <input type="number" class="input-sia" id="fact-neto" placeholder="0" oninput="calcularMontos()">
+                    </div>
+                    <div>
+                        <label class="form-label-sia">IVA (19%)</label>
+                        <input type="number" class="input-sia" id="fact-iva" placeholder="0" readonly style="background:#f8fafc;">
+                    </div>
+                    <div>
+                        <label class="form-label-sia">Total</label>
+                        <input type="number" class="input-sia" id="fact-total" placeholder="0" readonly style="background:#f8fafc; font-weight:800;">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label-sia">Glosa / Descripción</label>
+                    <input type="text" class="input-sia" id="fact-glosa" placeholder="Servicios profesionales mes de Enero...">
+                </div>
+            </div>
+            <div class="d-flex gap-3 mt-2">
+                <button class="btn btn-sia px-5 py-2" style="font-size:13px;" onclick="agregarFactura()">+ Agregar a Lote</button>
+                <button class="btn btn-sia px-5 py-2" style="font-size:13px; background:#16a34a!important;" onclick="emitirLote()">🚀 Emitir Lote</button>
+                <button class="btn btn-sia px-5 py-2" style="font-size:13px; background:#64748b!important;" onclick="limpiarFormulario()">🗑 Limpiar</button>
+            </div>
+            <div id="lote-container" class="content-card mt-4" style="display:none;">
+                <h6 style="font-weight:800; margin-bottom:12px;">Lote pendiente de emisión</h6>
+                <table class="table table-sm table-bordered align-middle text-center">
+                    <thead class="table-light">
+                        <tr><th>Tipo</th><th>Folio</th><th>Receptor</th><th>Neto</th><th>IVA</th><th>Total</th><th></th></tr>
+                    </thead>
+                    <tbody id="body-lote"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== USUARIOS ===== -->
+        <div id="view-usuarios" class="section-view">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 style="font-weight: 800;">👤 Gestión de Usuarios</h2>
+                <button class="btn btn-sia px-4 py-2" style="font-size:13px;" onclick="abrirModalUsuario()">+ Nuevo Usuario</button>
+            </div>
+            <div class="content-card">
+                <input type="text" class="search-bar" placeholder="🔍 Buscar usuario..." oninput="filtrarUsuarios(this.value)">
+                <div id="lista-usuarios">
+                    <p class="text-muted text-center py-3">Cargando usuarios...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL NUEVO CLIENTE -->
+    <div class="modal-overlay" id="modal-cliente">
+        <div class="modal-box">
+            <h4>➕ Nuevo Cliente</h4>
+            <label>Empresa / Razón Social</label>
+            <input type="text" id="nc-empresa" placeholder="Empresa S.A.">
+            <label>RUT Cliente</label>
+            <input type="text" id="nc-rut" placeholder="76123456-7">
+            <label>Servicio</label>
+            <select id="nc-servicio">
+                <option value="SII">SII</option>
+                <option value="BCI">BCI</option>
+                <option value="Santander">Santander</option>
+                <option value="SII_BOLETAS">SII Boletas</option>
+            </select>
+            <label>Estado</label>
+            <select id="nc-estado">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+            </select>
+            <div class="d-flex gap-2 mt-2">
+                <button class="btn btn-sia w-100" onclick="guardarCliente()">Guardar</button>
+                <button class="btn w-100" style="border:1px solid #e2e8f0;" onclick="cerrarModal('modal-cliente')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO USUARIO -->
+    <div class="modal-overlay" id="modal-usuario">
+        <div class="modal-box">
+            <h4>👤 Nuevo Usuario</h4>
+            <label>Nombre completo</label>
+            <input type="text" id="nu-nombre" placeholder="Juan Pérez">
+            <label>Usuario / RUT</label>
+            <input type="text" id="nu-usuario" placeholder="12345678-9">
+            <label>Contraseña</label>
+            <input type="password" id="nu-clave" placeholder="••••••••">
+            <label>Rol</label>
+            <select id="nu-rol">
+                <option value="Administrador">Administrador</option>
+                <option value="Contador">Contador</option>
+                <option value="Asistente">Asistente</option>
+                <option value="Solo lectura">Solo lectura</option>
+            </select>
+            <div class="d-flex gap-2 mt-2">
+                <button class="btn btn-sia w-100" onclick="guardarUsuario()">Guardar</button>
+                <button class="btn w-100" style="border:1px solid #e2e8f0;" onclick="cerrarModal('modal-usuario')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <script>
+        // ===================== CONFIG =====================
+        const API_CLIENTES = "https://sheetdb.io/api/v1/dcvgd2ct1vira";
+        const API_USUARIOS = "https://sheetdb.io/api/v1/bcicxw6vxc36j";
+
+        let todosClientes = [];
+        let todosUsuarios = [];
+        let loteFacturas = [];
+
+        // ===================== SESION =====================
+        const name = localStorage.getItem('nombreUsuario') || "Usuario";
+        document.getElementById('uName').innerText = name;
+        document.getElementById('uInitial').innerText = name.charAt(0).toUpperCase();
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "htmll.html";
+        }
+
+        // ===================== NAV =====================
+        function showSection(id) {
+            document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const target = document.getElementById('view-' + id);
+            if (target) target.classList.add('active');
+            const nav = document.getElementById('nav-' + id);
+            if (nav) nav.classList.add('active');
+
+            if (id === 'dashboard') cargarDashboard();
+            if (id === 'usuarios') cargarUsuarios();
+        }
+
+        // ===================== TOAST =====================
+        function toast(msg, tipo = 'info') {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = `toast-msg ${tipo}`;
+            t.innerText = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3500);
+        }
+
+        // ===================== CLIENTES =====================
+        async function cargarClientes() {
+            try {
+                const r = await fetch(API_CLIENTES);
+                todosClientes = await r.json();
+                poblarTablaRegistro();
+                poblarTablaCarga();
+            } catch (e) {
+                toast('Error al cargar clientes', 'error');
+            }
+        }
+
+        function poblarTablaRegistro() {
+            const body = document.getElementById('body-registro');
+            body.innerHTML = '';
+            todosClientes.filter(i => i.RUT).forEach(item => {
+                body.innerHTML += `<tr>
+                    <td>${item.Empresa || '—'}</td>
+                    <td>${item.RUT}</td>
+                    <td><span class="badge-ok">${item.Servicio || 'SII'}</span></td>
+                    <td>
+                        <button class="btn btn-sia me-1" onclick="verServicios('${item.RUT}')">Ver Servicios</button>
+                        <button class="btn btn-sia" style="background:#dc2626!important;" onclick="eliminarCliente('${item.RUT}')">Eliminar</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        function poblarTablaCarga() {
+            const body = document.getElementById('body-carga');
+            body.innerHTML = '';
+            const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            const mesActual = meses[new Date().getMonth()];
+            const anioActual = new Date().getFullYear();
+            todosClientes.filter(i => i.RUT).forEach(item => {
+                body.innerHTML += `<tr>
+                    <td>${item.Empresa || '—'}</td>
+                    <td>${item.RUT}</td>
+                    <td>${mesActual} ${anioActual}</td>
+                    <td><span class="badge-pend">Pendiente</span></td>
+                    <td><button class="btn btn-sia" onclick="toast('Función disponible en servidor', 'info')">Cargar Info</button></td>
+                </tr>`;
+            });
+        }
+
+        function filtrarTabla(tbodyId, texto) {
+            const rows = document.getElementById(tbodyId).querySelectorAll('tr');
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(texto.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        function verServicios(rut) {
+            const c = todosClientes.find(x => x.RUT === rut);
+            if (c) toast(`${c.Empresa} — Servicio: ${c.Servicio || 'SII'}`, 'info');
+        }
+
+        function eliminarCliente(rut) {
+            if (!confirm(`¿Eliminar cliente RUT ${rut}?`)) return;
+            toast('Eliminación disponible con backend conectado', 'info');
+        }
+
+        function abrirModalCliente() {
+            document.getElementById('modal-cliente').classList.add('open');
+        }
+
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        async function guardarCliente() {
+            const empresa = document.getElementById('nc-empresa').value.trim();
+            const rut = document.getElementById('nc-rut').value.trim();
+            const servicio = document.getElementById('nc-servicio').value;
+            const estado = document.getElementById('nc-estado').value;
+            if (!empresa || !rut) { toast('Completa todos los campos', 'error'); return; }
+            toast('Cliente guardado (requiere backend para persistir)', 'success');
+            cerrarModal('modal-cliente');
+        }
+
+        // ===================== DASHBOARD =====================
+        async function cargarDashboard() {
+            if (todosClientes.length === 0) await cargarClientes();
+            const total = todosClientes.filter(i => i.RUT).length;
+            const conSII = todosClientes.filter(i => i.RUT && (i.Servicio === 'SII' || !i.Servicio)).length;
+            const conBco = todosClientes.filter(i => i.RUT && (i.Servicio === 'BCI' || i.Servicio === 'Santander')).length;
+            const pendientes = todosClientes.filter(i => i.RUT && !i.Servicio).length;
+
+            document.getElementById('dash-total').innerText = total;
+            document.getElementById('dash-sii').innerText = conSII;
+            document.getElementById('dash-bco').innerText = conBco;
+            document.getElementById('dash-pend').innerText = pendientes;
+
+            const body = document.getElementById('body-dashboard');
+            body.innerHTML = '';
+            todosClientes.filter(i => i.RUT).forEach(item => {
+                const tieneSII = !item.Servicio || item.Servicio.includes('SII');
+                const tieneBco = item.Servicio === 'BCI' || item.Servicio === 'Santander';
+                body.innerHTML += `<tr>
+                    <td>${item.Empresa || '—'}</td>
+                    <td>${item.RUT}</td>
+                    <td>${tieneSII ? '<span class="badge-ok">✓ Sí</span>' : '<span class="badge-err">✗ No</span>'}</td>
+                    <td>${tieneBco ? '<span class="badge-ok">✓ Sí</span>' : '<span class="badge-pend">—</span>'}</td>
+                    <td><span class="badge-ok">Activo</span></td>
+                </tr>`;
+            });
+        }
+
+        // ===================== MATCH =====================
+        function ejecutarMatch() {
+            const rut = document.getElementById('match-rut').value;
+            const mes = document.getElementById('match-mes').value;
+            const ano = document.getElementById('match-ano').value;
+            if (!rut || !mes || !ano) { toast('Completa todos los filtros', 'error'); return; }
+            const body = document.getElementById('body-match');
+            body.innerHTML = `<tr>
+                <td>${todosClientes.find(c=>c.RUT===rut)?.Empresa || rut}</td>
+                <td>${rut}</td>
+                <td>${mes} ${ano}</td>
+                <td>—</td><td>—</td>
+                <td><span class="match-no">⚠ Requiere servidor</span></td>
+                <td>—</td>
+            </tr>`;
+            toast('Match disponible con servidor Python conectado', 'info');
+        }
+
+        // ===================== DESCARGAS =====================
+        function generarDescarga() {
+            const rut = document.getElementById('desc-rut').value;
+            const mes = document.getElementById('desc-mes').value;
+            const ano = document.getElementById('desc-ano').value;
+            const tipo = document.getElementById('desc-tipo').value;
+            if (!rut || !mes || !ano) { toast('Completa los filtros', 'error'); return; }
+
+            const tipos = {
+                'todos': ['RCV Compras', 'RCV Ventas', 'Boletas Honorarios', 'Libro Diario', 'Cartola Bancaria'],
+                'rcv': ['RCV Compras', 'RCV Ventas'],
+                'bher': ['Boletas Honorarios'],
+                'libro': ['Libro Diario'],
+                'bco': ['Cartola Bancaria']
+            };
+
+            const lista = document.getElementById('lista-descargas');
+            lista.innerHTML = '';
+            (tipos[tipo] || []).forEach(doc => {
+                lista.innerHTML += `<div class="download-item">
+                    <div class="file-info">
+                        <div class="file-icon">📄</div>
+                        <div>
+                            <div class="file-name">${doc} — ${rut} — ${mes} ${ano}</div>
+                            <div class="file-date">Generado ahora · Excel</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sia" onclick="toast('Descarga disponible con servidor Python', 'info')">⬇ Descargar</button>
+                </div>`;
+            });
+            toast(`${(tipos[tipo]||[]).length} documentos listos para descargar`, 'success');
+        }
+
+        // ===================== FACTURADOR =====================
+        function calcularMontos() {
+            const neto = parseInt(document.getElementById('fact-neto').value) || 0;
+            const iva = Math.round(neto * 0.19);
+            const total = neto + iva;
+            document.getElementById('fact-iva').value = iva;
+            document.getElementById('fact-total').value = total;
+        }
+
+        function agregarFactura() {
+            const tipo = document.getElementById('fact-tipo').value;
+            const folio = document.getElementById('fact-folio').value;
+            const receptor = document.getElementById('fact-razon-receptor').value;
+            const neto = parseInt(document.getElementById('fact-neto').value) || 0;
+            const iva = parseInt(document.getElementById('fact-iva').value) || 0;
+            const total = parseInt(document.getElementById('fact-total').value) || 0;
+
+            if (!folio || !receptor || neto === 0) { toast('Completa folio, receptor y monto', 'error'); return; }
+
+            loteFacturas.push({ tipo, folio, receptor, neto, iva, total });
+            actualizarTablaLote();
+            toast('Documento agregado al lote', 'success');
+            document.getElementById('fact-folio').value = '';
+            document.getElementById('fact-neto').value = '';
+            document.getElementById('fact-iva').value = '';
+            document.getElementById('fact-total').value = '';
+        }
+
+        function actualizarTablaLote() {
+            const body = document.getElementById('body-lote');
+            const container = document.getElementById('lote-container');
+            if (loteFacturas.length === 0) { container.style.display = 'none'; return; }
+            container.style.display = 'block';
+            body.innerHTML = '';
+            loteFacturas.forEach((f, idx) => {
+                body.innerHTML += `<tr>
+                    <td>Doc ${f.tipo}</td>
+                    <td>${f.folio}</td>
+                    <td>${f.receptor}</td>
+                    <td>$${f.neto.toLocaleString('es-CL')}</td>
+                    <td>$${f.iva.toLocaleString('es-CL')}</td>
+                    <td><strong>$${f.total.toLocaleString('es-CL')}</strong></td>
+                    <td><button class="btn btn-sia" style="background:#dc2626!important;font-size:10px;" onclick="quitarDelLote(${idx})">✕</button></td>
+                </tr>`;
+            });
+        }
+
+        function quitarDelLote(idx) {
+            loteFacturas.splice(idx, 1);
+            actualizarTablaLote();
+        }
+
+        function emitirLote() {
+            if (loteFacturas.length === 0) { toast('El lote está vacío', 'error'); return; }
+            toast(`Lote de ${loteFacturas.length} documentos requiere servidor SII conectado`, 'info');
+        }
+
+        function limpiarFormulario() {
+            ['fact-rut-emisor','fact-razon-emisor','fact-folio','fact-rut-receptor','fact-razon-receptor','fact-neto','fact-iva','fact-total','fact-glosa'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            loteFacturas = [];
+            actualizarTablaLote();
+        }
+
+        // ===================== USUARIOS =====================
+        async function cargarUsuarios() {
+            try {
+                const r = await fetch(API_USUARIOS);
+                todosUsuarios = await r.json();
+                renderizarUsuarios(todosUsuarios);
+            } catch (e) {
+                toast('Error al cargar usuarios', 'error');
+            }
+        }
+
+        function renderizarUsuarios(lista) {
+            const div = document.getElementById('lista-usuarios');
+            div.innerHTML = '';
+            if (!lista.length) { div.innerHTML = '<p class="text-muted text-center">No hay usuarios</p>'; return; }
+            lista.forEach(u => {
+                const nombre = u.usuario || u.rut || '?';
+                div.innerHTML += `<div class="user-card">
+                    <div class="avatar">${nombre.charAt(0).toUpperCase()}</div>
+                    <div class="info">
+                        <div class="name">${nombre}</div>
+                        <div class="role">RUT: ${u.rut || '—'} &nbsp;|&nbsp; Rol: ${u.rol || 'Contador'}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-sia" style="font-size:11px;">Editar</button>
+                        <button class="btn btn-sia" style="background:#dc2626!important;font-size:11px;" onclick="toast('Eliminar requiere backend', 'info')">Eliminar</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function filtrarUsuarios(texto) {
+            const filtrados = todosUsuarios.filter(u =>
+                (u.usuario || '').toLowerCase().includes(texto.toLowerCase()) ||
+                (u.rut || '').toLowerCase().includes(texto.toLowerCase())
+            );
+            renderizarUsuarios(filtrados);
+        }
+
+        function abrirModalUsuario() {
+            document.getElementById('modal-usuario').classList.add('open');
+        }
+
+        async function guardarUsuario() {
+            const nombre = document.getElementById('nu-nombre').value.trim();
+            const usuario = document.getElementById('nu-usuario').value.trim();
+            const clave = document.getElementById('nu-clave').value.trim();
+            const rol = document.getElementById('nu-rol').value;
+            if (!nombre || !usuario || !clave) { toast('Completa todos los campos', 'error'); return; }
+            toast('Usuario guardado (requiere SheetDB con permisos de escritura)', 'success');
+            cerrarModal('modal-usuario');
+        }
+
+        // Cerrar modales al hacer click fuera
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); });
+        });
+
+        // ===================== INIT =====================
+        cargarClientes();
+
+        // Fecha por defecto en facturador
+        document.getElementById('fact-fecha').value = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>
